@@ -31,6 +31,7 @@ export default function QuizInterface({
   const [score, setScore] = useState(0)
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null)
   const [loading, setLoading] = useState(true)
+  const [generatingPractice, setGeneratingPractice] = useState(false)
   
   // Chatbot state
   const [chatMessages, setChatMessages] = useState<Array<{ role: 'user' | 'assistant', content: string }>>([])
@@ -218,6 +219,66 @@ export default function QuizInterface({
     try {
       const question = questions[currentQuestion]
       
+      // Check if user is asking for practice examples/new questions
+      const isAskingForPractice = (
+        userMessage.toLowerCase().includes('example') ||
+        userMessage.toLowerCase().includes('practice') ||
+        userMessage.toLowerCase().includes('try on my own') ||
+        userMessage.toLowerCase().includes('new question') ||
+        userMessage.toLowerCase().includes('give me') && (
+          userMessage.toLowerCase().includes('example') ||
+          userMessage.toLowerCase().includes('question') ||
+          userMessage.toLowerCase().includes('problem')
+        ) ||
+        userMessage.toLowerCase().includes('can i try') ||
+        userMessage.toLowerCase().includes('more practice')
+      )
+      
+      if (isAskingForPractice) {
+        // Generate a new practice question
+        setGeneratingPractice(true)
+        setChatMessages(prev => [...prev, { 
+          role: 'assistant', 
+          content: 'Sure! Let me create a new practice question for you to try...' 
+        }])
+        
+        try {
+          const practiceQuestion = await AIService.generatePracticeQuestion(
+            lessonId,
+            grade,
+            language,
+            lessonTitle,
+            question.question // Use current question as topic context
+          )
+          
+          // Add the new question to the questions array
+          const newQuestionIndex = questions.length
+          setQuestions(prev => [...prev, practiceQuestion])
+          
+          // Reset state for new question
+          setSelectedAnswer(null)
+          setShowExplanation(false)
+          setIsCorrect(null)
+          
+          // Navigate to the new question
+          setCurrentQuestion(newQuestionIndex)
+          
+          setChatMessages(prev => [...prev, { 
+            role: 'assistant', 
+            content: `Great! I've created a new practice question for you. Try solving it! If you need help, just ask me to explain.` 
+          }])
+        } catch (error) {
+          console.error('Error generating practice question:', error)
+          setChatMessages(prev => [...prev, { 
+            role: 'assistant', 
+            content: 'Sorry, I had trouble creating a practice question. Please try again!' 
+          }])
+        } finally {
+          setGeneratingPractice(false)
+        }
+        return
+      }
+      
       // Check if user is asking about a concept they don't understand
       const isAskingAboutConcept = (
         userMessage.toLowerCase().includes("don't know") ||
@@ -300,9 +361,9 @@ export default function QuizInterface({
   return (
     <div className="grid lg:grid-cols-2 gap-6 h-full">
       {/* Left Side - Quiz */}
-      <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8 border border-white/50 flex flex-col" data-tour="quiz-section">
+      <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8 border border-white/50 flex flex-col overflow-hidden" data-tour="quiz-section">
         {/* Progress */}
-        <div className="mb-6">
+        <div className="mb-6 flex-shrink-0">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium text-gray-700">
               {t('question')} {currentQuestion + 1} / {questions.length}
@@ -322,7 +383,7 @@ export default function QuizInterface({
         </div>
 
         {/* Question */}
-        <div className="mb-6 flex-1">
+        <div className="mb-6 flex-1 overflow-y-auto min-h-0">
           <div className="flex items-center gap-2 mb-4">
             <div className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-semibold">
               AI Generated
@@ -380,66 +441,26 @@ export default function QuizInterface({
           </div>
         </div>
 
-        {/* Explanation */}
+        {/* Simple Correct/Incorrect Indicator */}
         <AnimatePresence>
           {showExplanation && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className={`mb-6 p-4 rounded-lg ${
+              className={`mb-4 p-3 rounded-lg text-center font-semibold text-lg flex-shrink-0 ${
                 isCorrect
-                  ? 'bg-green-50 border border-green-200'
-                  : 'bg-blue-50 border border-blue-200'
+                  ? 'bg-green-50 border border-green-200 text-green-700'
+                  : 'bg-red-50 border border-red-200 text-red-700'
               }`}
             >
-              <div className="flex items-start gap-3">
-                <Lightbulb
-                  className={`w-6 h-6 flex-shrink-0 ${
-                    isCorrect ? 'text-green-600' : 'text-blue-600'
-                  }`}
-                />
-                <div className="flex-1">
-                  <h3 className="font-semibold mb-2">
-                    {isCorrect ? t('correct') : t('incorrect')}
-                  </h3>
-                  <div className="text-sm whitespace-pre-line bg-white/50 p-4 rounded-lg border-2 border-gray-300 shadow-inner font-mono">
-                    {question.explanation.split('\n').map((line, idx) => {
-                      // Check if line contains math operations (numbers, +, -, ×, ÷, =)
-                      const isMathLine = /[\d+\-×÷=]/.test(line) && /^\s*[\d+\-×÷=\s]+\s*$/.test(line.trim())
-                      // Check if line is part of a math problem (has numbers and operators)
-                      const isProblemLine = /^\s*[\d+\-×÷\s]+$/.test(line.trim()) && line.trim().length > 2
-                      // Check if line is answer box (___)
-                      const isAnswerBox = /^[\s_]+$/.test(line.trim())
-                      // Check if line is instruction text
-                      const isInstruction = line.trim().length > 0 && !isMathLine && !isProblemLine && !isAnswerBox
-                      
-                      return (
-                        <div 
-                          key={idx} 
-                          className={`py-0.5 ${
-                            isMathLine || isProblemLine
-                              ? 'text-center font-bold text-gray-900 text-base leading-tight' 
-                              : isAnswerBox
-                              ? 'text-center text-gray-500 text-base leading-tight border-b-2 border-dashed border-gray-400'
-                              : isInstruction
-                              ? 'text-gray-700 leading-relaxed text-sm pl-2'
-                              : 'text-gray-600 leading-relaxed'
-                          }`}
-                        >
-                          {line || '\u00A0'}
-                        </div>
-                      )
-                    })}
-                  </div>
-                </div>
-              </div>
+              {isCorrect ? t('correct') : t('incorrect')}
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Navigation */}
-        <div className="flex gap-4 mt-auto">
+        {/* Navigation - Always visible and sticky */}
+        <div className="flex gap-4 mt-auto pt-4 border-t border-gray-200 flex-shrink-0 bg-white/95 backdrop-blur-sm -mx-8 px-8 pb-8">
           <button
             onClick={onBack}
             className="flex-1 flex items-center justify-center gap-2 px-6 py-3 border-2 border-gray-300 rounded-lg font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
@@ -450,7 +471,7 @@ export default function QuizInterface({
           {showExplanation && (
             <button
               onClick={handleNext}
-              className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-200"
+              className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-lg"
             >
               {isLastQuestion ? t('finish') : t('next')}
               <ArrowRight className="w-5 h-5" />

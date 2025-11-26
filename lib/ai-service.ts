@@ -149,5 +149,39 @@ export class AIService {
       return 'Hint not available.'
     }
   }
+
+  static async generatePracticeQuestion(
+    lessonId: string,
+    grade: string,
+    language: string,
+    lessonTitle?: string,
+    topic?: string
+  ): Promise<QuizQuestion> {
+    try {
+      const response = await fetch('/api/practice-question', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          lessonId,
+          grade,
+          language,
+          lessonTitle,
+          topic,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to generate practice question')
+      }
+
+      const data = await response.json()
+      return data.question
+    } catch (error) {
+      console.error('Error generating practice question:', error)
+      throw error
+    }
+  }
 }
 
