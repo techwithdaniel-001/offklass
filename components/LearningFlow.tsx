@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useStore } from '@/lib/store'
-import { getLessonById, getLessonsByGrade, Lesson } from '@/lib/curriculum'
+import { getLessonById, getLessonsByGrade, Lesson } from '@/lib/curriculum/index'
 import { getTranslation } from '@/lib/translations'
 import { badges, checkBadgeEarned } from '@/lib/badges'
 import VideoPlayer from './VideoPlayer'
@@ -71,6 +71,10 @@ export default function LearningFlow({ lesson }: LearningFlowProps) {
     setVideoWatched(true)
     // Navigate to quiz when video is completed
     setCurrentStep('quiz')
+    // Update the store to reflect video watched status
+    if (!user.completedLessons.includes(lesson.id)) {
+      // Video watched but lesson not complete yet
+    }
   }
 
   const handleQuizComplete = (points: number, isPerfect: boolean) => {
@@ -120,9 +124,24 @@ export default function LearningFlow({ lesson }: LearningFlowProps) {
     if (hasCompletedVideo && hasCompletedQuiz && !user.completedLessons.includes(lesson.id)) {
       completeLesson(lesson.id)
       addPoints(50) // Bonus points for completing entire lesson
-      setCurrentStep('complete')
+      
+      // Find the next lesson
+      const allLessons = getLessonsByGrade(lesson.grade, user.school || 'regina')
+      const currentIndex = allLessons.findIndex(l => l.id === lesson.id)
+      const nextLesson = allLessons[currentIndex + 1]
+      
+      if (nextLesson) {
+        // Show completion message briefly, then auto-navigate to next lesson
+        setCurrentStep('complete')
+        setTimeout(() => {
+          router.push(`/learn/${nextLesson.id}`)
+        }, 2000) // Show completion message for 2 seconds
+      } else {
+        // No more lessons, show completion screen
+        setCurrentStep('complete')
+      }
     }
-  }, [videoWatched, quizCompleted, flashcardsCompleted, lesson.id, user.completedLessons, completeLesson, addPoints])
+  }, [videoWatched, quizCompleted, flashcardsCompleted, lesson.id, lesson.grade, user.completedLessons, user.school, completeLesson, addPoints, router])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-cyan-50">
@@ -287,12 +306,24 @@ export default function LearningFlow({ lesson }: LearningFlowProps) {
                 <p className="text-xl text-gray-600 mb-6">
                   {t('earnedPoints')} 50 {t('pointsText')}!
                 </p>
-                <button
-                  onClick={() => router.push('/dashboard')}
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
-                >
-                  {t('continue')}
-                </button>
+                <p className="text-lg text-gray-500 mb-8">
+                  {(() => {
+                    const allLessons = getLessonsByGrade(lesson.grade, user.school || 'regina')
+                    const currentIndex = allLessons.findIndex(l => l.id === lesson.id)
+                    const nextLesson = allLessons[currentIndex + 1]
+                    return nextLesson 
+                      ? 'Moving to next lesson...' 
+                      : "You've completed all lessons in this grade! 🏆"
+                  })()}
+                </p>
+                <div className="flex gap-4 justify-center">
+                  <button
+                    onClick={() => router.push('/dashboard')}
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
+                  >
+                    Back to Dashboard
+                  </button>
+                </div>
               </div>
             </motion.div>
           )}

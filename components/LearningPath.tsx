@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter, usePathname } from 'next/navigation'
 import { useStore } from '@/lib/store'
 import { getTranslation } from '@/lib/translations'
 import { getLessonsByGrade, getTopicsByGrade } from '@/lib/curriculum/index'
@@ -14,8 +14,20 @@ interface LearningPathProps {
 
 export default function LearningPath({ grade }: LearningPathProps) {
   const router = useRouter()
+  const pathname = usePathname()
   const { user } = useStore()
   const [peekUnit, setPeekUnit] = useState<number | null>(null)
+  const [currentLessonId, setCurrentLessonId] = useState<string | null>(null)
+  
+  // Extract current lesson ID from URL
+  useEffect(() => {
+    if (pathname?.startsWith('/learn/')) {
+      const lessonId = pathname.split('/learn/')[1]
+      setCurrentLessonId(lessonId || null)
+    } else {
+      setCurrentLessonId(null)
+    }
+  }, [pathname])
   
   if (!user) return null
 
@@ -178,9 +190,14 @@ export default function LearningPath({ grade }: LearningPathProps) {
                     {unitLessons.map((lesson, lessonIndex) => {
                       const unlocked = isLessonUnlocked(lesson.id)
                       const completed = isLessonCompleted(lesson.id)
-                      const isCurrent = unlocked && !completed && 
+                      // Current lesson is either:
+                      // 1. The lesson currently being viewed (from URL)
+                      // 2. The first unlocked lesson that's not completed
+                      const isCurrentlyViewed = currentLessonId === lesson.id
+                      const isNextInSequence = unlocked && !completed && 
                         (lessonIndex === 0 || isLessonCompleted(unitLessons[lessonIndex - 1]?.id) ||
                          (unitIndex > 0 && lessonIndex === 0 && isLessonCompleted(units[unitIndex - 1]?.[units[unitIndex - 1].length - 1]?.id)))
+                      const isCurrent = isCurrentlyViewed || (isNextInSequence && !currentLessonId)
 
                       const showConnector = lessonIndex < unitLessons.length - 1
 
