@@ -108,6 +108,80 @@ Write 8:
  801`,
       difficulty: 'medium',
     },
+    {
+      id: 'add-subtract-3-4',
+      question: 'What is 623 + 189?',
+      options: ['802', '812', '792', '822'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+  623
++ 189
+-----
+
+First, ones: 3 plus 9 is 12
+Write 2, carry 1:
+  623
++ 189
+----
+    2
+  ↑
+  (carry 1)
+
+Next, tens: 2 plus 8 is 10, plus 1 is 11
+Write 1, carry 1:
+  623
++ 189
+----
+   12
+  ↑
+  (carry 1)
+
+Then, hundreds: 6 plus 1 is 7, plus 1 is 8
+Write 8:
+  623
++ 189
+----
+ 812`,
+      difficulty: 'medium',
+    },
+    {
+      id: 'add-subtract-3-5',
+      question: 'What is 456 - 278?',
+      options: ['178', '168', '188', '158'],
+      correctAnswer: 0,
+      explanation: `Let me solve this:
+  456
+- 278
+-----
+
+First, ones: 6 minus 8 cannot, borrow 1
+Now, ones: 16 minus 8 is 8
+Write 8:
+  456
+- 278
+----
+    8
+  ↑
+  (borrowed 1, so 5 becomes 4)
+
+Next, tens: 4 minus 7 cannot, borrow 1
+Now, tens: 14 minus 7 is 7
+Write 7:
+  456
+- 278
+----
+   78
+  ↑
+  (borrowed 1, so 4 becomes 3)
+
+Then, hundreds: 3 minus 2 is 1
+Write 1:
+  456
+- 278
+----
+ 178`,
+      difficulty: 'hard',
+    },
   ],
   'multiplication-intro': [
     {
@@ -163,6 +237,42 @@ Write 72:
 ----
  72`,
       difficulty: 'medium',
+    },
+    {
+      id: 'multiplication-intro-4',
+      question: 'What is 3 × 9?',
+      options: ['24', '27', '30', '21'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+  3
+× 9
+----
+
+9 times 3 is 27
+Write 27:
+  3
+× 9
+----
+ 27`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'multiplication-intro-5',
+      question: 'What is 7 × 6?',
+      options: ['40', '42', '44', '38'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+  7
+× 6
+----
+
+6 times 7 is 42
+Write 42:
+  7
+× 6
+----
+ 42`,
+      difficulty: 'easy',
     },
   ],
   'multiplication-tables': [
@@ -227,6 +337,31 @@ Write 4:
   48`,
       difficulty: 'medium',
     },
+    {
+      id: 'multiplication-tables-4',
+      question: 'What is 11 × 5?',
+      options: ['50', '55', '60', '45'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+  11
+×  5
+----
+
+5 times 1 is 5
+Write 5:
+  11
+×  5
+----
+   5
+
+5 times 1 is 5
+Write 5:
+  11
+×  5
+----
+  55`,
+      difficulty: 'medium',
+    },
   ],
   'division-intro': [
     {
@@ -269,6 +404,34 @@ So 24 ÷ 6 = 4`,
 7 × 5 = 35
 
 So 35 ÷ 7 = 5`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'division-intro-4',
+      question: 'What is 18 ÷ 3?',
+      options: ['5', '6', '7', '4'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+  18 ÷ 3 = ?
+
+3 times what equals 18?
+3 × 6 = 18
+
+So 18 ÷ 3 = 6`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'division-intro-5',
+      question: 'What is 28 ÷ 4?',
+      options: ['6', '7', '8', '5'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+  28 ÷ 4 = ?
+
+4 times what equals 28?
+4 × 7 = 28
+
+So 28 ÷ 4 = 7`,
       difficulty: 'easy',
     },
   ],
@@ -314,6 +477,34 @@ Round 156 to the nearest ten.
 
 So 156 rounds to 160`,
       difficulty: 'easy',
+    },
+    {
+      id: 'rounding-numbers-4',
+      question: 'Round 89 to the nearest ten.',
+      options: ['80', '85', '90', '88'],
+      correctAnswer: 2,
+      explanation: `Let me solve this:
+Round 89 to the nearest ten.
+
+89 is between 80 and 90
+89 is closer to 90
+
+So 89 rounds to 90`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'rounding-numbers-5',
+      question: 'Round 125 to the nearest hundred.',
+      options: ['100', '120', '130', '200'],
+      correctAnswer: 0,
+      explanation: `Let me solve this:
+Round 125 to the nearest hundred.
+
+125 is between 100 and 200
+125 is closer to 100
+
+So 125 rounds to 100`,
+      difficulty: 'medium',
     },
   ],
   // Grade 3 - Fractions
@@ -628,6 +819,85 @@ Write 9:
   90`,
       difficulty: 'medium',
     },
+    {
+      id: 'multi-digit-multiply-3',
+      question: 'What is 34 × 5?',
+      options: ['160', '170', '150', '180'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+  34
+×  5
+----
+
+5 times 4 is 20
+Write 0, carry 2:
+  34
+×  5
+----
+   0
+  ↑
+  (carry 2)
+
+5 times 3 is 15, plus 2 is 17
+Write 17:
+  34
+×  5
+----
+ 170`,
+      difficulty: 'medium',
+    },
+    {
+      id: 'multi-digit-multiply-4',
+      question: 'What is 42 × 3?',
+      options: ['116', '126', '136', '106'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+  42
+×  3
+----
+
+3 times 2 is 6
+Write 6:
+  42
+×  3
+----
+   6
+
+3 times 4 is 12
+Write 12:
+  42
+×  3
+----
+ 126`,
+      difficulty: 'medium',
+    },
+    {
+      id: 'multi-digit-multiply-5',
+      question: 'What is 56 × 4?',
+      options: ['214', '224', '234', '204'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+  56
+×  4
+----
+
+4 times 6 is 24
+Write 4, carry 2:
+  56
+×  4
+----
+   4
+  ↑
+  (carry 2)
+
+4 times 5 is 20, plus 2 is 22
+Write 22:
+  56
+×  4
+----
+ 224`,
+      difficulty: 'medium',
+    },
   ],
   'long-division': [
     {
@@ -658,6 +928,48 @@ So 48 ÷ 4 = 12`,
 So 63 ÷ 7 = 9`,
       difficulty: 'medium',
     },
+    {
+      id: 'long-division-3',
+      question: 'What is 72 ÷ 8?',
+      options: ['8', '9', '10', '7'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+  72 ÷ 8 = ?
+
+8 times what equals 72?
+8 × 9 = 72
+
+So 72 ÷ 8 = 9`,
+      difficulty: 'medium',
+    },
+    {
+      id: 'long-division-4',
+      question: 'What is 56 ÷ 7?',
+      options: ['6', '7', '8', '9'],
+      correctAnswer: 2,
+      explanation: `Let me solve this:
+  56 ÷ 7 = ?
+
+7 times what equals 56?
+7 × 8 = 56
+
+So 56 ÷ 7 = 8`,
+      difficulty: 'medium',
+    },
+    {
+      id: 'long-division-5',
+      question: 'What is 81 ÷ 9?',
+      options: ['8', '9', '10', '7'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+  81 ÷ 9 = ?
+
+9 times what equals 81?
+9 × 9 = 81
+
+So 81 ÷ 9 = 9`,
+      difficulty: 'medium',
+    },
   ],
   'factors-multiples': [
     {
@@ -676,6 +988,33 @@ Find factors of 12
 12 ÷ 12 = 1 ✓
 
 So factors are: 1, 2, 3, 4, 6, 12`,
+      difficulty: 'medium',
+    },
+    {
+      id: 'decimals-intro-6',
+      question: 'What is 6.3 + 4.9?',
+      options: ['11.2', '11.0', '10.8', '11.4'],
+      correctAnswer: 0,
+      explanation: `Let me solve this:
+  6.3
++ 4.9
+----
+
+First, tenths: 3 plus 9 is 12
+Write 2, carry 1:
+  6.3
++ 4.9
+----
+   .2
+  ↑
+  (carry 1)
+
+Next, ones: 6 plus 4 is 10, plus 1 is 11
+Write 11:
+  6.3
++ 4.9
+----
+ 11.2`,
       difficulty: 'medium',
     },
   ],
@@ -717,6 +1056,24 @@ Now compare: 8/12 and 9/12
 So 3/4 > 2/3`,
       difficulty: 'medium',
     },
+    {
+      id: 'comparing-fractions-2',
+      question: 'Which is greater: 1/2 or 3/5?',
+      options: ['1/2', '3/5', 'They are equal', 'Cannot tell'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+Compare 1/2 and 3/5
+
+Make denominators the same:
+1/2 = 5/10 (multiply by 5)
+3/5 = 6/10 (multiply by 2)
+
+Now compare: 5/10 and 6/10
+6 > 5, so 6/10 > 5/10
+
+So 3/5 > 1/2`,
+      difficulty: 'medium',
+    },
   ],
   'adding-fractions': [
     {
@@ -732,6 +1089,36 @@ Same denominators, so add numerators:
 Keep denominator: 5
 
 So 2/5 + 1/5 = 3/5`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'adding-fractions-2',
+      question: 'What is 3/7 + 2/7?',
+      options: ['5/7', '5/14', '4/7', '6/7'],
+      correctAnswer: 0,
+      explanation: `Let me solve this:
+  3/7 + 2/7
+
+Same denominators, so add numerators:
+3 + 2 = 5
+Keep denominator: 7
+
+So 3/7 + 2/7 = 5/7`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'adding-fractions-3',
+      question: 'What is 1/4 + 2/4?',
+      options: ['3/4', '3/8', '2/4', '1/2'],
+      correctAnswer: 0,
+      explanation: `Let me solve this:
+  1/4 + 2/4
+
+Same denominators, so add numerators:
+1 + 2 = 3
+Keep denominator: 4
+
+So 1/4 + 2/4 = 3/4`,
       difficulty: 'easy',
     },
   ],
@@ -787,6 +1174,61 @@ Next, ones: 3 minus 1 is 2
 Write 2:
   4.6
 - 1.9
+----
+ 2.7`,
+      difficulty: 'medium',
+    },
+    {
+      id: 'decimals-intro-4',
+      question: 'What is 5.4 + 3.8?',
+      options: ['9.2', '9.0', '8.8', '9.4'],
+      correctAnswer: 0,
+      explanation: `Let me solve this:
+  5.4
++ 3.8
+----
+
+First, tenths: 4 plus 8 is 12
+Write 2, carry 1:
+  5.4
++ 3.8
+----
+   .2
+  ↑
+  (carry 1)
+
+Next, ones: 5 plus 3 is 8, plus 1 is 9
+Write 9:
+  5.4
++ 3.8
+----
+ 9.2`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'decimals-intro-5',
+      question: 'What is 7.2 - 4.5?',
+      options: ['2.7', '2.5', '3.2', '2.9'],
+      correctAnswer: 0,
+      explanation: `Let me solve this:
+  7.2
+- 4.5
+----
+
+First, tenths: 2 minus 5 cannot, borrow 1
+Now, tenths: 12 minus 5 is 7
+Write 7:
+  7.2
+- 4.5
+----
+   .7
+  ↑
+  (borrowed 1, so 7 becomes 6)
+
+Next, ones: 6 minus 4 is 2
+Write 2:
+  7.2
+- 4.5
 ----
  2.7`,
       difficulty: 'medium',

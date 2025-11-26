@@ -7,6 +7,17 @@ export interface VideoProgress {
   lastUpdated: number
 }
 
+export interface QuizProgress {
+  lessonId: string
+  currentQuestion: number
+  score: number
+  selectedAnswers: number[]
+  showExplanation: boolean[]
+  failedQuestions: string[]
+  questions: any[]
+  lastUpdated: number
+}
+
 export interface User {
   id: string
   name: string
@@ -24,6 +35,7 @@ export interface User {
   aiInteractions: number
   hasCompletedOnboarding: boolean
   videoProgress: Record<string, VideoProgress> // key: videoUrl or lessonId
+  quizProgress: Record<string, QuizProgress> // key: lessonId
 }
 
 interface AppState {
@@ -43,6 +55,9 @@ interface AppState {
   completeOnboarding: () => void
   saveVideoProgress: (videoId: string, currentTime: number, watched: boolean) => void
   getVideoProgress: (videoId: string) => VideoProgress | null
+  saveQuizProgress: (lessonId: string, progress: Omit<QuizProgress, 'lessonId' | 'lastUpdated'>) => void
+  getQuizProgress: (lessonId: string) => QuizProgress | null
+  clearQuizProgress: (lessonId: string) => void
 }
 
 export const useStore = create<AppState & { _hasHydrated: boolean }>()(
@@ -63,6 +78,7 @@ export const useStore = create<AppState & { _hasHydrated: boolean }>()(
           aiInteractions: user.aiInteractions || 0,
           hasCompletedOnboarding: user.hasCompletedOnboarding || false,
           videoProgress: user.videoProgress || {},
+          quizProgress: user.quizProgress || {},
         }
         set({ user: userWithDefaults, isAuthenticated: true })
       },
@@ -220,6 +236,41 @@ export const useStore = create<AppState & { _hasHydrated: boolean }>()(
         if (!state.user) return null
         return state.user.videoProgress?.[videoId] || null
       },
+      saveQuizProgress: (lessonId: string, progress: Omit<QuizProgress, 'lessonId' | 'lastUpdated'>) =>
+        set((state) => {
+          if (!state.user) return state
+          const quizProgress = state.user.quizProgress || {}
+          return {
+            user: {
+              ...state.user,
+              quizProgress: {
+                ...quizProgress,
+                [lessonId]: {
+                  ...progress,
+                  lessonId,
+                  lastUpdated: Date.now(),
+                },
+              },
+            },
+          }
+        }),
+      getQuizProgress: (lessonId: string) => {
+        const state = get()
+        if (!state.user) return null
+        return state.user.quizProgress?.[lessonId] || null
+      },
+      clearQuizProgress: (lessonId: string) =>
+        set((state) => {
+          if (!state.user) return state
+          const quizProgress = state.user.quizProgress || {}
+          const { [lessonId]: _, ...rest } = quizProgress
+          return {
+            user: {
+              ...state.user,
+              quizProgress: rest,
+            },
+          }
+        }),
     }),
     {
       name: 'math-learning-storage',

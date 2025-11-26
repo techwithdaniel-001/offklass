@@ -44,7 +44,7 @@ export default function QuizInterface({
   const [hasRecordedAIInteraction, setHasRecordedAIInteraction] = useState(false)
   const chatEndRef = useRef<HTMLDivElement>(null)
   const chatContainerRef = useRef<HTMLDivElement>(null)
-  const { recordQuizCompleted, recordAIInteraction } = useStore()
+  const { recordQuizCompleted, recordAIInteraction, saveQuizProgress, getQuizProgress, clearQuizProgress } = useStore()
 
   const t = (key: string) => getTranslation(language, key)
 
@@ -85,19 +85,42 @@ export default function QuizInterface({
   const loadQuestions = async () => {
     setLoading(true)
     try {
+      // Check for saved quiz progress
+      const savedProgress = getQuizProgress(lessonId)
+      
       // First try to get premade quiz
       const premadeQuestions = getPremadeQuiz(lessonId)
       
+      let loadedQuestions: QuizQuestion[] = []
+      
       if (premadeQuestions.length > 0) {
         // Use premade quiz
-        setQuestions(premadeQuestions)
+        loadedQuestions = premadeQuestions
       } else {
         // Fallback to AI-generated quiz if no premade quiz exists
         const quizQuestions = await AIService.generateQuiz(lessonId, grade, language, lessonTitle)
         if (quizQuestions.length === 0) {
           console.error('No questions generated')
         }
-        setQuestions(quizQuestions)
+        loadedQuestions = quizQuestions
+      }
+      
+      setQuestions(loadedQuestions)
+      
+      // Restore progress if exists and matches current questions
+      if (savedProgress && savedProgress.questions.length === loadedQuestions.length) {
+        // Verify question IDs match
+        const questionIdsMatch = savedProgress.questions.every((savedQ, idx) => 
+          savedQ.id === loadedQuestions[idx]?.id
+        )
+        
+        if (questionIdsMatch && savedProgress.currentQuestion < loadedQuestions.length) {
+          setCurrentQuestion(savedProgress.currentQuestion)
+          setScore(savedProgress.score)
+          setSelectedAnswer(savedProgress.selectedAnswers[savedProgress.currentQuestion] ?? null)
+          setShowExplanation(savedProgress.showExplanation[savedProgress.currentQuestion] ?? false)
+          setFailedQuestions(loadedQuestions.filter(q => savedProgress.failedQuestions.includes(q.id)))
+        }
       }
     } catch (error) {
       console.error('Error loading questions:', error)
@@ -111,13 +134,29 @@ export default function QuizInterface({
     setSelectedAnswer(index)
     const correct = index === questions[currentQuestion].correctAnswer
     setIsCorrect(correct)
+    const newScore = correct ? score + 1 : score
     if (correct) {
-      setScore(score + 1)
+      setScore(newScore)
     } else {
       // Track failed question
       setFailedQuestions(prev => [...prev, questions[currentQuestion]])
     }
     setShowExplanation(true)
+    
+    // Save progress
+    const selectedAnswers = Array(questions.length).fill(null)
+    selectedAnswers[currentQuestion] = index
+    const showExplanationArray = Array(questions.length).fill(false)
+    showExplanationArray[currentQuestion] = true
+    
+    saveQuizProgress(lessonId, {
+      currentQuestion,
+      score: newScore,
+      selectedAnswers,
+      showExplanation: showExplanationArray,
+      failedQuestions: correct ? failedQuestions.map(q => q.id) : [...failedQuestions.map(q => q.id), questions[currentQuestion].id],
+      questions: questions.map(q => ({ id: q.id, question: q.question })),
+    })
     
     // Only show explanation automatically for incorrect answers
     const question = questions[currentQuestion]
@@ -136,11 +175,29 @@ export default function QuizInterface({
 
   const handleNext = () => {
     if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1)
+      const nextQuestion = currentQuestion + 1
+      setCurrentQuestion(nextQuestion)
       setSelectedAnswer(null)
       setShowExplanation(false)
       setIsCorrect(null)
       setChatMessages([]) // Clear chat for new question
+      
+      // Save progress
+      const selectedAnswers = Array(questions.length).fill(null)
+      for (let i = 0; i <= currentQuestion; i++) {
+        selectedAnswers[i] = i === currentQuestion ? selectedAnswer : null
+      }
+      const showExplanationArray = Array(questions.length).fill(false)
+      showExplanationArray[currentQuestion] = true
+      
+      saveQuizProgress(lessonId, {
+        currentQuestion: nextQuestion,
+        score,
+        selectedAnswers,
+        showExplanation: showExplanationArray,
+        failedQuestions: failedQuestions.map(q => q.id),
+        questions: questions.map(q => ({ id: q.id, question: q.question })),
+      })
     } else {
       // Show completion screen when all questions are answered
       setShowExplanation(false) // Hide explanation to show completion screen
@@ -199,6 +256,10 @@ export default function QuizInterface({
     const isPerfect = score === questions.length
     // Record quiz completion for badge tracking
     recordQuizCompleted()
+    // Clear quiz progress since it's completed
+    clearQuizProgress(lessonId)
+    // Hide completion screen and trigger completion callback
+    setShowCompletionScreen(false)
     onComplete(points, isPerfect)
   }
 
