@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useStore } from '@/lib/store'
 import Dashboard from '@/components/Dashboard'
@@ -8,12 +8,21 @@ import Dashboard from '@/components/Dashboard'
 export default function DashboardPage() {
   const router = useRouter()
   const { isAuthenticated, user } = useStore()
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    if (!isAuthenticated || !user) {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (mounted && (!isAuthenticated || !user)) {
       router.push('/')
     }
-  }, [isAuthenticated, user, router])
+  }, [mounted, isAuthenticated, user])
+
+  if (!mounted) {
+    return null
+  }
 
   if (!isAuthenticated || !user) {
     return null

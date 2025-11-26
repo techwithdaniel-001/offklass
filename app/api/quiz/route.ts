@@ -38,56 +38,82 @@ Create 3-5 quiz questions in ${languageName}. Each question should:
 3. Have 4 multiple choice options
 4. Include a SHORT, step-by-step explanation like you're writing on a board
 
-CRITICAL: For the explanation, write it EXACTLY like a teacher writing on a whiteboard - SIMPLE and STEP-BY-STEP:
-- Stack the numbers (standard way) with a line and answer box (___)
-- Show the problem first: numbers stacked with line and answer box
-- Solve column by column, one step at a time
-- After each step, show the updated answer with what you wrote
-- Write what you're doing: "0 plus 0 is 0" then show where to write it
-- Keep it SHORT - minimal text, just the solving steps
-- NO deep explanations about place value or concepts
-- Show the answer box (___) so students know where to write
-- Update the answer after each step so they can follow along with paper and pen
+CRITICAL: For the explanation, you MUST use this EXACT format - NO DEVIATIONS:
 
-Example for addition (450 + 250):
-"Let me write this on the board:
+FORMAT RULES:
+1. Start with: "Let me solve this:"
+2. Show problem stacked with answer box:
+   [number1]
+   [operator] [number2]
+   ------
+3. Then solve step-by-step, showing updated answer after EACH step
+4. Use this EXACT format for each step:
+   "First, [column name]: [calculation]"
+   "Write [digit], [carry if needed]:"
+   [show updated problem with answer so far]
+5. Keep it SHORT - minimal text, just the math steps
+6. NO extra explanations - just the solving process
+7. Show final answer at the end
+
+EXAMPLE FORMAT (you MUST follow this exactly):
+"Let me solve this:
+  23
+×  4
+-----
+
+First, ones: 4 times 3 is 12
+Write 2, carry 1:
+  23
+×  4
+----
+   2
+  ↑
+  (carry 1)
+
+Next, tens: 4 times 2 is 8, plus 1 is 9
+Write 9:
+  23
+×  4
+----
+  92"
+
+EXAMPLE FOR ADDITION (follow this exactly):
+"Let me solve this:
   450
 + 250
 -----
-  ___
-  
-First, ones column: 0 plus 0 is 0
-Write 0 in the ones place:
+
+First, ones: 0 plus 0 is 0
+Write 0:
   450
 + 250
------
+----
    0
 
-Next, tens column: 5 plus 5 is 10
+Next, tens: 5 plus 5 is 10
 Write 0, carry 1:
   450
 + 250
------
+----
   00
   ↑
   (carry 1)
 
-Then, hundreds column: 4 plus 2 plus 1 is 7
+Then, hundreds: 4 plus 2 plus 1 is 7
 Write 7:
   450
 + 250
------
+----
  700"
 
-Example for multiplication (50 × 6):
+EXAMPLE FOR MULTIPLICATION (follow this exactly):
 "Let me solve this:
   50
 ×  6
 ----
-  ___
-  
+
 6 times 0 is 0
-Write 0 in ones place:
+Write 0:
   50
 ×  6
 ----
@@ -106,7 +132,7 @@ Return a JSON array with this exact format:
     "question": "Question text in ${languageName}",
     "options": ["option1", "option2", "option3", "option4"],
     "correctAnswer": 0,
-    "explanation": "Short board-style explanation showing step-by-step solving process",
+    "explanation": "MUST follow this exact format: Start with 'Let me solve this:', show problem stacked, solve step-by-step showing updated answer after each step. Use format: 'First, [column]: [calculation]' then show updated problem. Keep it SHORT - just math steps.",
     "difficulty": "easy"
   }
 ]
@@ -118,15 +144,42 @@ Only return the JSON array, no other text.`
       messages: [
         {
           role: 'system',
-          content:
-            'You are a helpful math teacher. Always respond with valid JSON only.',
+          content: `You are a math teacher writing on a whiteboard. For explanations, you MUST use this EXACT format:
+1. Start with "Let me solve this:"
+2. Show problem stacked (no answer box needed)
+3. Solve step-by-step: "First, [column]: [calculation]" then show updated problem
+4. After each step, show the updated answer
+5. Keep it SHORT - just math steps, no extra text
+6. Format example:
+"Let me solve this:
+  23
+×  4
+----
+
+First, ones: 4 times 3 is 12
+Write 2, carry 1:
+  23
+×  4
+----
+   2
+  ↑
+  (carry 1)
+
+Next, tens: 4 times 2 is 8, plus 1 is 9
+Write 9:
+  23
+×  4
+----
+  92"
+
+Always respond with valid JSON only.`,
         },
         {
           role: 'user',
           content: prompt,
         },
       ],
-      temperature: 0.7,
+      temperature: 0.3,
       max_tokens: 2000,
     })
 

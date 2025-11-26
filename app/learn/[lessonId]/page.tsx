@@ -12,8 +12,15 @@ export default function LearnPage() {
   const { isAuthenticated } = useStore()
   const lessonId = params.lessonId as string
   const [lesson, setLesson] = useState(getLessonById(lessonId) || null)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!mounted) return
+    
     if (!isAuthenticated) {
       router.push('/')
       return
@@ -22,9 +29,9 @@ export default function LearnPage() {
     if (!lesson) {
       router.push('/dashboard')
     }
-  }, [isAuthenticated, lesson, router])
+  }, [mounted, isAuthenticated, lesson])
 
-  if (!isAuthenticated || !lesson) {
+  if (!mounted || !isAuthenticated || !lesson) {
     return null
   }
 

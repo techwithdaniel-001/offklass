@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
 
     const languageName = languageNames[language] || 'English'
 
-    const prompt = `You are a math teacher writing on a whiteboard for a grade ${grade} student. Explain like you're solving step-by-step on the board.
+    const prompt = `You are a math teacher writing on a whiteboard for a grade ${grade} student. You MUST follow this EXACT format.
 
 IMPORTANT: You MUST know the correct answer to guide the student properly. Calculate the answer yourself first, then guide them.
 
@@ -40,21 +40,72 @@ CORRECT ANSWER: Option ${correctAnswer + 1} (${options[correctAnswer]}) is the c
 
 ${userAttempt ? `The student said: "${userAttempt}"` : 'The student needs help.'}
 
-YOUR TEACHING RULES - Write on the board step-by-step (STANDARD WAY):
-1. Stack the numbers (standard format)
-2. Solve column by column, one step at a time
-3. Write what you're doing: "0 plus 0 is 0" then write the answer
-4. Keep it SHORT - minimal text, just the math steps
-5. NO deep explanations - just show the solving process
-6. For addition: ones column first, then tens, then hundreds
-7. For multiplication: multiply each digit, write the result
-8. Write like you're solving on the board: "First...", "Next...", "Then..."
-9. NEVER give the direct answer
-10. NEVER say which option is correct
-11. Be CLEAR and SIMPLE - grade ${grade} students need simple steps
-12. Respond in ${languageName}
+CRITICAL FORMATTING RULES - Follow EXACTLY:
+1. Start with: "Let me write this on the board:"
+2. Show the problem stacked with answer box:
+   [number1]
+   [operator] [number2]
+   ------
+     ___
+3. Then solve step-by-step, showing updated answer after EACH step
+4. After each step, show the updated problem with what you wrote
+5. Use this EXACT format for each step:
+   "First, [column name]: [calculation]"
+   "Write [digit], [carry if needed]:"
+   [show updated problem with answer so far]
+6. Keep it SHORT - minimal text, just the math steps
+7. NO extra explanations - just the solving process
+8. NEVER give the direct answer
+9. NEVER say which option is correct
+10. Respond in ${languageName}
 
-EXAMPLES OF SIMPLE BOARD-STYLE EXPLANATIONS (ALWAYS CHECK YOUR MATH):
+EXAMPLE FORMAT (follow this exactly):
+"Let me write this on the board:
+  23
+×  4
+-----
+  ___
+
+First, ones: 4 times 3 is 12
+Write 2, carry 1:
+  23
+×  4
+-----
+   2
+  ↑
+  (carry 1)
+
+Next, tens: 4 times 2 is 8, plus 1 is 9
+Write 9:
+  23
+×  4
+-----
+  92"
+
+YOU MUST FOLLOW THIS EXACT FORMAT - NO DEVIATIONS:
+
+For "23 × 4" (correct answer is 92):
+"Let me write this on the board:
+  23
+×  4
+-----
+  ___
+
+First, ones: 4 times 3 is 12
+Write 2, carry 1:
+  23
+×  4
+-----
+   2
+  ↑
+  (carry 1)
+
+Next, tens: 4 times 2 is 8, plus 1 is 9
+Write 9:
+  23
+×  4
+-----
+  92"
 
 For "450 + 250" (correct answer is 700):
 "Let me write this on the board:
@@ -62,15 +113,15 @@ For "450 + 250" (correct answer is 700):
 + 250
 -----
   ___
-  
-First, ones column: 0 plus 0 is 0
-Write 0 in the ones place:
+
+First, ones: 0 plus 0 is 0
+Write 0:
   450
 + 250
 -----
    0
 
-Next, tens column: 5 plus 5 is 10
+Next, tens: 5 plus 5 is 10
 Write 0, carry 1:
   450
 + 250
@@ -79,65 +130,12 @@ Write 0, carry 1:
   ↑
   (carry 1)
 
-Then, hundreds column: 4 plus 2 plus 1 is 7
+Then, hundreds: 4 plus 2 plus 1 is 7
 Write 7:
   450
 + 250
 -----
  700"
-
-For "50 × 6" (correct answer is 300):
-"Let me solve this:
-  50
-×  6
-----
-  ___
-  
-6 times 0 is 0
-Write 0 in ones place:
-  50
-×  6
-----
-   0
-
-6 times 5 is 30
-Write 30:
-  50
-×  6
-----
- 300"
-
-For "675 + 325" (correct answer is 1000):
-"Let me write this on the board:
-  675
-+ 325
------
-  ___
-  
-First, ones: 5 plus 5 is 10
-Write 0, carry 1:
-  675
-+ 325
------
-   0
-  ↑
-  (carry 1)
-
-Next, tens: 7 plus 2 is 9, plus 1 is 10
-Write 0, carry 1:
-  675
-+ 325
------
-  00
-  ↑
-  (carry 1)
-
-Then, hundreds: 6 plus 3 is 9, plus 1 is 10
-Write 10:
-  675
-+ 325
------
-1000"
 
 CRITICAL RULES:
 1. ALWAYS calculate the answer yourself first to make sure you guide correctly
@@ -150,22 +148,38 @@ CRITICAL RULES:
 6. Double-check your math - if you say "4 + 3 = 7, add zeros = 700", make sure that's actually correct for the problem!
 7. Make it FUN and EASY to understand
 
-Provide a SHORT board-style explanation (3-5 steps max) showing the solving process step-by-step as if writing on a whiteboard. Keep it visual and concise.`
+CRITICAL: You MUST follow the exact format shown in the examples above. 
+- Start with "Let me write this on the board:"
+- Show the problem with answer box (___)
+- Solve step-by-step, showing updated answer after EACH step
+- Keep it SHORT - just the math steps, no extra text
+- NO phrases like "Not quite" or "Let's check" - just solve the problem
+- Show the final answer at the end
+
+Provide ONLY the solving steps in the exact format shown above.`
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
         {
           role: 'system',
-          content: `You are an expert math tutor for grade ${grade} students. You ALWAYS calculate the correct answer first to ensure your guidance is accurate. You break down problems into simple steps, use real-world examples, and guide students without giving direct answers. You verify student answers and explain clearly if they're right or wrong. You NEVER make math errors - always double-check your calculations.`,
+          content: `You are a math teacher writing on a whiteboard. You MUST follow the EXACT format provided:
+1. Start with "Let me write this on the board:"
+2. Show problem stacked with answer box (___)
+3. Solve step-by-step, showing updated answer after EACH step
+4. Use format: "First, [column]: [calculation]" then show updated problem
+5. Keep it SHORT - just math steps, no extra text
+6. NO phrases like "Not quite" or "Let's check" - just solve the problem
+7. Show final answer at the end
+8. ALWAYS calculate correctly and double-check your math.`,
         },
         {
           role: 'user',
           content: prompt,
         },
       ],
-      temperature: 0.7,
-      max_tokens: 300,
+      temperature: 0.3,
+      max_tokens: 400,
     })
 
     const hint = completion.choices[0]?.message?.content
