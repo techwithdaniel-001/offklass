@@ -468,9 +468,9 @@ export default function QuizInterface({
   }
 
   return (
-    <div className="grid lg:grid-cols-2 gap-6 h-full max-h-screen overflow-hidden">
-      {/* Left Side - Quiz - Fixed Size */}
-      <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8 border border-white/50 flex flex-col h-full max-h-screen overflow-hidden flex-shrink-0" data-tour="quiz-section">
+    <div className="flex gap-6 h-screen max-h-screen overflow-hidden p-4">
+      {/* Left Side - Quiz - Fixed Size, No Expansion */}
+      <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8 border border-white/50 flex flex-col w-1/2 h-full overflow-hidden flex-shrink-0" data-tour="quiz-section">
         {/* Progress */}
         <div className="mb-6 flex-shrink-0">
           <div className="flex items-center justify-between mb-2">
@@ -491,8 +491,8 @@ export default function QuizInterface({
           </div>
         </div>
 
-        {/* Question */}
-        <div className="mb-6 flex-1 overflow-y-auto min-h-0 max-h-[50vh]">
+        {/* Question - Scrollable but fixed container */}
+        <div className="mb-6 flex-1 overflow-y-auto min-h-0">
           <div className="flex items-center gap-2 mb-4">
             <div className={`px-3 py-1 rounded-full text-sm font-semibold ${
               isPremadeQuiz 
@@ -572,8 +572,8 @@ export default function QuizInterface({
           )}
         </AnimatePresence>
 
-        {/* Navigation - Always visible and sticky */}
-        <div className="flex gap-4 mt-auto pt-4 border-t border-gray-200 flex-shrink-0 bg-white/95 backdrop-blur-sm -mx-8 px-8 pb-8">
+        {/* Navigation - Always visible and sticky at bottom */}
+        <div className="flex gap-4 mt-auto pt-4 border-t border-gray-200 flex-shrink-0 bg-white/95 backdrop-blur-sm -mx-8 px-8 pb-8 sticky bottom-0 z-10">
           <button
             onClick={onBack}
             className="flex-1 flex items-center justify-center gap-2 px-6 py-3 border-2 border-gray-300 rounded-lg font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
@@ -593,8 +593,8 @@ export default function QuizInterface({
         </div>
       </div>
 
-      {/* Right Side - AI Chatbot Helper - Scrollable */}
-      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl shadow-2xl border-2 border-blue-200 flex flex-col h-full overflow-hidden" data-tour="ai-tutor">
+      {/* Right Side - AI Chatbot Helper - Scrollable, Can Expand */}
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl shadow-2xl border-2 border-blue-200 flex flex-col w-1/2 h-full overflow-hidden flex-1" data-tour="ai-tutor">
         {/* Chatbot Header */}
         <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4 rounded-t-3xl flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
