@@ -499,8 +499,8 @@ export default function QuizInterface({
 
   return (
     <div className="grid lg:grid-cols-2 gap-6 h-full max-h-screen overflow-hidden">
-      {/* Left Side - Quiz - Fixed */}
-      <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8 border border-white/50 flex flex-col h-full overflow-hidden" data-tour="quiz-section">
+      {/* Left Side - Quiz - Fixed Size */}
+      <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8 border border-white/50 flex flex-col h-full max-h-screen overflow-hidden flex-shrink-0" data-tour="quiz-section">
         {/* Progress */}
         <div className="mb-6 flex-shrink-0">
           <div className="flex items-center justify-between mb-2">
@@ -522,7 +522,7 @@ export default function QuizInterface({
         </div>
 
         {/* Question */}
-        <div className="mb-6 flex-1 overflow-y-auto min-h-0 max-h-[calc(100vh-400px)]">
+        <div className="mb-6 flex-1 overflow-y-auto min-h-0 max-h-[50vh]">
           <div className="flex items-center gap-2 mb-4">
             <div className={`px-3 py-1 rounded-full text-sm font-semibold ${
               isPremadeQuiz 
