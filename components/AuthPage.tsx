@@ -63,6 +63,7 @@ export default function AuthPage() {
       quizzesCompleted: 0,
       aiInteractions: 0,
       hasCompletedOnboarding: false,
+      videoProgress: {},
     }
 
     setUser(user)

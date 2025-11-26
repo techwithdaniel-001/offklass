@@ -109,9 +109,15 @@ export default function LearningFlow({ lesson }: LearningFlowProps) {
     setFlashcardsCompleted(true)
   }
 
-  // Check if lesson is fully completed (all three sections done)
+  // Check if lesson is fully completed (video + quiz OR video + flashcards + quiz)
+  // Allow progression if they've done video and quiz (flashcards are optional)
   useEffect(() => {
-    if (videoWatched && quizCompleted && flashcardsCompleted && !user.completedLessons.includes(lesson.id)) {
+    const hasCompletedVideo = videoWatched
+    const hasCompletedQuiz = quizCompleted
+    const hasCompletedFlashcards = flashcardsCompleted
+    
+    // Lesson is complete if: video + quiz (flashcards optional but recommended)
+    if (hasCompletedVideo && hasCompletedQuiz && !user.completedLessons.includes(lesson.id)) {
       completeLesson(lesson.id)
       addPoints(50) // Bonus points for completing entire lesson
       setCurrentStep('complete')
@@ -223,6 +229,7 @@ export default function LearningFlow({ lesson }: LearningFlowProps) {
                 topicId={lesson.topicId}
                 lessonOrder={lesson.order}
                 grade={user.grade}
+                lessonId={lesson.id}
               />
             </motion.div>
           )}

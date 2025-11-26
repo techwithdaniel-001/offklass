@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { AIService, QuizQuestion } from '@/lib/ai-service'
+import { getPremadeQuiz } from '@/lib/premade-quizzes'
 import { getTranslation } from '@/lib/translations'
 import { useStore } from '@/lib/store'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -32,6 +33,9 @@ export default function QuizInterface({
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null)
   const [loading, setLoading] = useState(true)
   const [generatingPractice, setGeneratingPractice] = useState(false)
+  const [showCompletionScreen, setShowCompletionScreen] = useState(false)
+  const [failedQuestions, setFailedQuestions] = useState<QuizQuestion[]>([])
+  const [isRetrying, setIsRetrying] = useState(false)
   
   // Chatbot state
   const [chatMessages, setChatMessages] = useState<Array<{ role: 'user' | 'assistant', content: string }>>([])
@@ -81,11 +85,20 @@ export default function QuizInterface({
   const loadQuestions = async () => {
     setLoading(true)
     try {
-      const quizQuestions = await AIService.generateQuiz(lessonId, grade, language, lessonTitle)
-      if (quizQuestions.length === 0) {
-        console.error('No questions generated')
+      // First try to get premade quiz
+      const premadeQuestions = getPremadeQuiz(lessonId)
+      
+      if (premadeQuestions.length > 0) {
+        // Use premade quiz
+        setQuestions(premadeQuestions)
+      } else {
+        // Fallback to AI-generated quiz if no premade quiz exists
+        const quizQuestions = await AIService.generateQuiz(lessonId, grade, language, lessonTitle)
+        if (quizQuestions.length === 0) {
+          console.error('No questions generated')
+        }
+        setQuestions(quizQuestions)
       }
-      setQuestions(quizQuestions)
     } catch (error) {
       console.error('Error loading questions:', error)
     } finally {
@@ -100,6 +113,9 @@ export default function QuizInterface({
     setIsCorrect(correct)
     if (correct) {
       setScore(score + 1)
+    } else {
+      // Track failed question
+      setFailedQuestions(prev => [...prev, questions[currentQuestion]])
     }
     setShowExplanation(true)
     
@@ -156,12 +172,64 @@ export default function QuizInterface({
       setIsCorrect(null)
       setChatMessages([]) // Clear chat for new question
     } else {
-      const points = score * 10
-      const isPerfect = score === questions.length
-      // Record quiz completion for badge tracking
-      recordQuizCompleted()
-      onComplete(points, isPerfect)
+      // Show completion screen when all questions are answered
+      setShowExplanation(false) // Hide explanation to show completion screen
+      setShowCompletionScreen(true)
     }
+  }
+
+  const handleRetryFailed = async () => {
+    setIsRetrying(true)
+    setLoading(true)
+    
+    try {
+      // Generate new questions for failed concepts
+      const retryQuestions: QuizQuestion[] = []
+      
+      for (const failedQuestion of failedQuestions) {
+        try {
+          const practiceQuestion = await AIService.generatePracticeQuestion(
+            lessonId,
+            grade,
+            language,
+            lessonTitle,
+            failedQuestion.question // Use failed question as context
+          )
+          retryQuestions.push(practiceQuestion)
+        } catch (error) {
+          console.error('Error generating retry question:', error)
+        }
+      }
+      
+      if (retryQuestions.length > 0) {
+        // Reset quiz state and add retry questions
+        setQuestions(retryQuestions)
+        setCurrentQuestion(0)
+        setSelectedAnswer(null)
+        setShowExplanation(false)
+        setIsCorrect(null)
+        setScore(0)
+        setFailedQuestions([]) // Reset failed questions for retry
+        setChatMessages([])
+        setShowCompletionScreen(false)
+      } else {
+        alert('Unable to generate retry questions. Please try again later.')
+      }
+    } catch (error) {
+      console.error('Error retrying quiz:', error)
+      alert('Error generating retry questions. Please try again.')
+    } finally {
+      setLoading(false)
+      setIsRetrying(false)
+    }
+  }
+
+  const handleFinishQuiz = () => {
+    const points = score * 10
+    const isPerfect = score === questions.length
+    // Record quiz completion for badge tracking
+    recordQuizCompleted()
+    onComplete(points, isPerfect)
   }
 
   const handleGetHint = async () => {
@@ -358,10 +426,81 @@ export default function QuizInterface({
   const question = questions[currentQuestion]
   const isLastQuestion = currentQuestion === questions.length - 1
 
+  // Check if current question is from premade quiz
+  const isPremadeQuiz = getPremadeQuiz(lessonId).length > 0
+  const isPerfect = score === questions.length
+  const totalQuestions = questions.length
+
+  // Show completion screen
+  if (showCompletionScreen) {
+    return (
+      <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-12 border border-white/50 flex flex-col items-center justify-center min-h-[500px]">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center"
+        >
+          {isPerfect ? (
+            <>
+              <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center">
+                <CheckCircle className="w-16 h-16 text-white" />
+              </div>
+              <h2 className="text-4xl font-bold text-gray-900 mb-4">
+                Congratulations! 🎉
+              </h2>
+              <p className="text-2xl text-gray-700 mb-2">
+                You got {score} out of {totalQuestions} correct!
+              </p>
+              <p className="text-lg text-gray-600 mb-8">
+                Perfect score! You've mastered this concept! 🌟
+              </p>
+              <button
+                onClick={handleFinishQuiz}
+                className="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold text-lg hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-lg"
+              >
+                Continue to Next Lesson
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
+                <Lightbulb className="w-16 h-16 text-white" />
+              </div>
+              <h2 className="text-4xl font-bold text-gray-900 mb-4">
+                Great Effort! 💪
+              </h2>
+              <p className="text-2xl text-gray-700 mb-2">
+                You got {score} out of {totalQuestions} correct!
+              </p>
+              <p className="text-lg text-gray-600 mb-8">
+                You missed {totalQuestions - score} concept{totalQuestions - score !== 1 ? 's' : ''}. Would you like to practice the concepts you missed?
+              </p>
+              <div className="flex gap-4 justify-center">
+                <button
+                  onClick={handleRetryFailed}
+                  disabled={isRetrying}
+                  className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-semibold text-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg disabled:opacity-50"
+                >
+                  {isRetrying ? 'Generating Questions...' : 'Yes, Let Me Practice!'}
+                </button>
+                <button
+                  onClick={handleFinishQuiz}
+                  className="px-8 py-4 bg-gray-300 text-gray-700 rounded-xl font-semibold text-lg hover:bg-gray-400 transition-all duration-200"
+                >
+                  Continue Anyway
+                </button>
+              </div>
+            </>
+          )}
+        </motion.div>
+      </div>
+    )
+  }
+
   return (
-    <div className="grid lg:grid-cols-2 gap-6 h-full">
-      {/* Left Side - Quiz */}
-      <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8 border border-white/50 flex flex-col overflow-hidden" data-tour="quiz-section">
+    <div className="grid lg:grid-cols-2 gap-6 h-full max-h-screen overflow-hidden">
+      {/* Left Side - Quiz - Fixed */}
+      <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8 border border-white/50 flex flex-col h-full overflow-hidden" data-tour="quiz-section">
         {/* Progress */}
         <div className="mb-6 flex-shrink-0">
           <div className="flex items-center justify-between mb-2">
@@ -383,10 +522,14 @@ export default function QuizInterface({
         </div>
 
         {/* Question */}
-        <div className="mb-6 flex-1 overflow-y-auto min-h-0">
+        <div className="mb-6 flex-1 overflow-y-auto min-h-0 max-h-[calc(100vh-400px)]">
           <div className="flex items-center gap-2 mb-4">
-            <div className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-semibold">
-              AI Generated
+            <div className={`px-3 py-1 rounded-full text-sm font-semibold ${
+              isPremadeQuiz 
+                ? 'bg-green-100 text-green-700' 
+                : 'bg-blue-100 text-blue-700'
+            }`}>
+              {isPremadeQuiz ? 'Premade Quiz' : 'AI Generated'}
             </div>
             <div className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-semibold">
               {question.difficulty.charAt(0).toUpperCase() + question.difficulty.slice(1)}
@@ -480,8 +623,8 @@ export default function QuizInterface({
         </div>
       </div>
 
-      {/* Right Side - AI Chatbot Helper - Always Visible */}
-      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl shadow-2xl border-2 border-blue-200 flex flex-col h-full" data-tour="ai-tutor">
+      {/* Right Side - AI Chatbot Helper - Scrollable */}
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl shadow-2xl border-2 border-blue-200 flex flex-col h-full overflow-hidden" data-tour="ai-tutor">
         {/* Chatbot Header */}
         <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4 rounded-t-3xl flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">

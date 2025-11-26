@@ -16,6 +16,7 @@ interface VideoPlayerProps {
   topicId?: string
   lessonOrder?: number
   grade?: string
+  lessonId?: string
 }
 
 export default function VideoPlayer({
@@ -27,12 +28,19 @@ export default function VideoPlayer({
   topicId,
   lessonOrder,
   grade,
+  lessonId,
 }: VideoPlayerProps) {
   const topic = useMemo(() => topicId ? getTopicById(topicId) : null, [topicId])
-  const { recordVideoWatched } = useStore()
-  const [played, setPlayed] = useState(0)
-  const [watched, setWatched] = useState(false)
-  const [hasRecordedVideo, setHasRecordedVideo] = useState(false)
+  const { recordVideoWatched, saveVideoProgress, getVideoProgress } = useStore()
+  
+  // Use lessonId as key if available, otherwise use videoUrl
+  const videoId = lessonId || videoUrl
+  
+  // Restore saved progress on mount
+  const savedProgress = getVideoProgress(videoId)
+  const [played, setPlayed] = useState(0) // Will be calculated from currentTime/duration
+  const [watched, setWatched] = useState(savedProgress?.watched || false)
+  const [hasRecordedVideo, setHasRecordedVideo] = useState(savedProgress?.watched || false)
   const [error, setError] = useState<string | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [isPaused, setIsPaused] = useState(true)
@@ -69,11 +77,17 @@ export default function VideoPlayer({
     const video = videoRef.current
     if (video.duration > 0) {
       const newPlayed = video.currentTime / video.duration
+      const currentTime = video.currentTime
       setPlayed(newPlayed)
+      
+      // Save progress to store
+      saveVideoProgress(videoId, currentTime, watched)
       
       // Mark as watched if 80% of video is watched
       if (newPlayed >= 0.8 && !watched) {
         setWatched(true)
+        // Save watched status
+        saveVideoProgress(videoId, currentTime, true)
         // Record video watched for badge tracking (only once per video)
         if (!hasRecordedVideo) {
           recordVideoWatched()
@@ -81,7 +95,7 @@ export default function VideoPlayer({
         }
       }
     }
-  }, [watched, hasRecordedVideo, recordVideoWatched])
+  }, [watched, hasRecordedVideo, recordVideoWatched, saveVideoProgress, videoId])
 
   // Setup progress tracking
   useEffect(() => {
@@ -125,6 +139,10 @@ export default function VideoPlayer({
       setWatched(true)
       setPlayed(1)
       setIsPlaying(false)
+      // Save final progress
+      if (video.duration > 0) {
+        saveVideoProgress(videoId, video.duration, true)
+      }
       if (!hasRecordedVideo) {
         recordVideoWatched()
         setHasRecordedVideo(true)
@@ -159,7 +177,40 @@ export default function VideoPlayer({
         clearTimeout(progressIntervalRef.current)
       }
     }
-  }, [updateProgress, hasRecordedVideo, recordVideoWatched])
+  }, [updateProgress, hasRecordedVideo, recordVideoWatched, saveVideoProgress, videoId])
+
+  // Restore saved video progress when video loads
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video || !savedProgress) return
+
+    const restoreProgress = () => {
+      if (video.duration > 0 && savedProgress.currentTime > 0) {
+        // Only restore if we haven't watched the video completely
+        if (!savedProgress.watched || savedProgress.currentTime < video.duration) {
+          video.currentTime = savedProgress.currentTime
+          // Update played state to match
+          setPlayed(savedProgress.currentTime / video.duration)
+        } else {
+          // Video was fully watched, set played to 1
+          setPlayed(1)
+        }
+      }
+    }
+
+    // Try to restore when metadata is loaded
+    if (video.readyState >= 1) {
+      restoreProgress()
+    } else {
+      video.addEventListener('loadedmetadata', restoreProgress, { once: true })
+      video.addEventListener('canplay', restoreProgress, { once: true })
+    }
+
+    return () => {
+      video.removeEventListener('loadedmetadata', restoreProgress)
+      video.removeEventListener('canplay', restoreProgress)
+    }
+  }, [savedProgress, videoId])
 
   return (
     <div className="bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden border-2 border-green-200">

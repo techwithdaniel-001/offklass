@@ -205,14 +205,84 @@ Only return the JSON array, no other text.`
     try {
       // Remove any markdown code blocks if present
       const cleanedContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
-      questions = JSON.parse(cleanedContent)
+      const parsed = JSON.parse(cleanedContent)
+      questions = parsed.questions || parsed // Handle both {questions: []} and [] formats
+      if (!Array.isArray(questions)) {
+        throw new Error('Questions must be an array')
+      }
     } catch (parseError) {
       console.error('Failed to parse OpenAI response:', content)
       throw new Error('Invalid JSON response from AI')
     }
 
+    // Validate and fix answers - ensure correctAnswer matches the actual correct option
+    const validatedQuestions = questions.map((q: any) => {
+      // Try to extract the correct answer from the question text
+      const questionText = q.question || ''
+      const options = q.options || []
+      
+      // For math questions, try to calculate the answer
+      // Extract numbers and operation from question (handles various formats)
+      const mathPatterns = [
+        /What is (\d+\.?\d*)\s*([+\-×÷x*])\s*(\d+\.?\d*)/i,
+        /(\d+\.?\d*)\s*([+\-×÷x*])\s*(\d+\.?\d*)/,
+      ]
+      
+      let calculatedAnswer: number | null = null
+      
+      for (const pattern of mathPatterns) {
+        const match = questionText.match(pattern)
+        if (match) {
+          const [, num1, op, num2] = match
+          const num1Val = parseFloat(num1)
+          const num2Val = parseFloat(num2)
+          
+          if (!isNaN(num1Val) && !isNaN(num2Val)) {
+            switch (op) {
+              case '+':
+              case 'x':
+              case '*':
+                calculatedAnswer = num1Val + num2Val
+                break
+              case '-':
+                calculatedAnswer = num1Val - num2Val
+                break
+              case '×':
+              case '*':
+                calculatedAnswer = num1Val * num2Val
+                break
+              case '÷':
+              case '/':
+                calculatedAnswer = num1Val / num2Val
+                break
+            }
+            break
+          }
+        }
+      }
+      
+      // Find which option matches the calculated answer
+      if (calculatedAnswer !== null) {
+        const correctIndex = options.findIndex((opt: string) => {
+          // Extract number from option (handle formats like "6.3", "Answer: 6.3", etc.)
+          const optStr = opt.toString().replace(/[^\d.]/g, '')
+          const optNum = parseFloat(optStr)
+          return !isNaN(optNum) && Math.abs(optNum - calculatedAnswer!) < 0.01
+        })
+        
+        if (correctIndex !== -1) {
+          if (correctIndex !== q.correctAnswer) {
+            console.warn(`Answer mismatch for question: ${questionText}. Calculated: ${calculatedAnswer}, Expected index ${correctIndex} but got ${q.correctAnswer}`)
+          }
+          q.correctAnswer = correctIndex
+        }
+      }
+      
+      return q
+    })
+
     // Format questions with IDs
-    const formattedQuestions = questions.map((q: any, index: number) => ({
+    const formattedQuestions = validatedQuestions.map((q: any, index: number) => ({
       id: `${lessonId}-${index + 1}`,
       question: q.question,
       options: q.options,

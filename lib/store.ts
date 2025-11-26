@@ -1,6 +1,12 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
+export interface VideoProgress {
+  currentTime: number
+  watched: boolean
+  lastUpdated: number
+}
+
 export interface User {
   id: string
   name: string
@@ -17,6 +23,7 @@ export interface User {
   quizzesCompleted: number
   aiInteractions: number
   hasCompletedOnboarding: boolean
+  videoProgress: Record<string, VideoProgress> // key: videoUrl or lessonId
 }
 
 interface AppState {
@@ -34,11 +41,13 @@ interface AppState {
   recordQuizCompleted: () => void
   recordAIInteraction: () => void
   completeOnboarding: () => void
+  saveVideoProgress: (videoId: string, currentTime: number, watched: boolean) => void
+  getVideoProgress: (videoId: string) => VideoProgress | null
 }
 
 export const useStore = create<AppState & { _hasHydrated: boolean }>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       user: null,
       isAuthenticated: false,
       _hasHydrated: false,
@@ -53,6 +62,7 @@ export const useStore = create<AppState & { _hasHydrated: boolean }>()(
           quizzesCompleted: user.quizzesCompleted || 0,
           aiInteractions: user.aiInteractions || 0,
           hasCompletedOnboarding: user.hasCompletedOnboarding || false,
+          videoProgress: user.videoProgress || {},
         }
         set({ user: userWithDefaults, isAuthenticated: true })
       },
@@ -187,6 +197,29 @@ export const useStore = create<AppState & { _hasHydrated: boolean }>()(
             },
           }
         }),
+      saveVideoProgress: (videoId: string, currentTime: number, watched: boolean) =>
+        set((state) => {
+          if (!state.user) return state
+          const videoProgress = state.user.videoProgress || {}
+          return {
+            user: {
+              ...state.user,
+              videoProgress: {
+                ...videoProgress,
+                [videoId]: {
+                  currentTime,
+                  watched,
+                  lastUpdated: Date.now(),
+                },
+              },
+            },
+          }
+        }),
+      getVideoProgress: (videoId: string) => {
+        const state = get()
+        if (!state.user) return null
+        return state.user.videoProgress?.[videoId] || null
+      },
     }),
     {
       name: 'math-learning-storage',
