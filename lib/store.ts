@@ -36,11 +36,12 @@ interface AppState {
   completeOnboarding: () => void
 }
 
-export const useStore = create<AppState>()(
+export const useStore = create<AppState & { _hasHydrated: boolean }>()(
   persist(
     (set) => ({
       user: null,
       isAuthenticated: false,
+      _hasHydrated: false,
       setUser: (user) => {
         const userWithDefaults = {
           ...user,
@@ -189,7 +190,18 @@ export const useStore = create<AppState>()(
     }),
     {
       name: 'math-learning-storage',
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          state._hasHydrated = true
+        }
+      },
     }
   )
 )
+
+// Hook to check if store has been hydrated
+export const useStoreHydrated = () => {
+  const _hasHydrated = useStore((state) => state._hasHydrated)
+  return _hasHydrated
+}
 
