@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { getTranslation } from '@/lib/translations'
 import { getTopicById } from '@/lib/curriculum'
 import { useStore } from '@/lib/store'
-import { CheckCircle, Sparkles, Clock, ArrowRight } from 'lucide-react'
+import { CheckCircle, Sparkles, Clock, ArrowRight, Play } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 interface VideoPlayerProps {
@@ -30,6 +30,7 @@ export default function VideoPlayer({
   const [watched, setWatched] = useState(false)
   const [hasRecordedVideo, setHasRecordedVideo] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [isPlaying, setIsPlaying] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
   const progressIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
@@ -75,9 +76,18 @@ export default function VideoPlayer({
       }
     }
 
+    const handlePlay = () => {
+      setIsPlaying(true)
+    }
+
+    const handlePause = () => {
+      setIsPlaying(false)
+    }
+
     const handleEnded = () => {
       setWatched(true)
       setPlayed(1)
+      setIsPlaying(false)
       if (!hasRecordedVideo) {
         recordVideoWatched()
         setHasRecordedVideo(true)
@@ -90,11 +100,15 @@ export default function VideoPlayer({
     }
 
     video.addEventListener('timeupdate', handleTimeUpdate)
+    video.addEventListener('play', handlePlay)
+    video.addEventListener('pause', handlePause)
     video.addEventListener('ended', handleEnded)
     video.addEventListener('error', handleError)
 
     return () => {
       video.removeEventListener('timeupdate', handleTimeUpdate)
+      video.removeEventListener('play', handlePlay)
+      video.removeEventListener('pause', handlePause)
       video.removeEventListener('ended', handleEnded)
       video.removeEventListener('error', handleError)
       if (progressIntervalRef.current) {
@@ -164,22 +178,46 @@ export default function VideoPlayer({
             />
           )}
           
-          {/* Video Info Overlay - Duolingo Style */}
-          <div className="absolute bottom-4 left-4 right-4 bg-gradient-to-r from-green-500/90 to-emerald-500/90 backdrop-blur-md rounded-xl p-4 text-white shadow-2xl border-2 border-white/20">
-            <div className="flex items-center gap-3">
-              {topic && (
-                <div className="text-4xl drop-shadow-lg">{topic.icon}</div>
-              )}
-              <div className="flex-1">
+          {/* Play Button Overlay - Always visible when paused */}
+          {!isPlaying && (
+            <div 
+              className="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-sm cursor-pointer z-10"
+              onClick={() => {
+                if (videoRef.current) {
+                  videoRef.current.play()
+                }
+              }}
+            >
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="w-20 h-20 sm:w-24 sm:h-24 bg-white/95 rounded-full flex items-center justify-center shadow-2xl border-4 border-green-500 hover:bg-white transition-all"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Play className="w-10 h-10 sm:w-12 sm:h-12 text-green-600 ml-1" fill="currentColor" />
+              </motion.div>
+            </div>
+          )}
+          
+          {/* Video Info Overlay - Duolingo Style - Hidden when playing */}
+          {!isPlaying && (
+            <div className="absolute bottom-4 left-4 right-4 bg-gradient-to-r from-green-500/90 to-emerald-500/90 backdrop-blur-md rounded-xl p-4 text-white shadow-2xl border-2 border-white/20 z-0">
+              <div className="flex items-center gap-3">
                 {topic && (
-                  <div className="text-xs opacity-90 mb-1 font-semibold uppercase tracking-wide">
-                    {topic.name}
-                  </div>
+                  <div className="text-4xl drop-shadow-lg">{topic.icon}</div>
                 )}
-                <div className="font-bold text-xl drop-shadow-md">{lessonTitle || 'Math Lesson'}</div>
+                <div className="flex-1">
+                  {topic && (
+                    <div className="text-xs opacity-90 mb-1 font-semibold uppercase tracking-wide">
+                      {topic.name}
+                    </div>
+                  )}
+                  <div className="font-bold text-xl drop-shadow-md">{lessonTitle || 'Math Lesson'}</div>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Progress Badge Overlay */}
