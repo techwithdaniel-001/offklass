@@ -221,6 +221,8 @@ export default function LearningFlow({ lesson }: LearningFlowProps) {
                 lessonTitle={lesson.title}
                 lessonDescription={lesson.description}
                 topicId={lesson.topicId}
+                lessonOrder={lesson.order}
+                grade={user.grade}
               />
             </motion.div>
           )}

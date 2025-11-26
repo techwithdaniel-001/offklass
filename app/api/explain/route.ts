@@ -31,28 +31,46 @@ export async function POST(request: NextRequest) {
 
 The concept to explain: "${concept}"
 
-EXPLANATION RULES:
-1. Start with the SIMPLEST definition possible
-2. Use REAL-WORLD examples (apples, money, toys, friends, etc.)
-3. Break it into TINY steps - one step at a time
-4. Show the PATTERN clearly
-5. Use ANALOGIES that kids understand
-6. Give 2-3 concrete examples with numbers
-7. Make it FUN and ENCOURAGING
-8. Use VERY simple language - no math jargon
+EXPLANATION RULES - Write on the board step-by-step (SIMPLE):
+1. Stack the numbers (standard way)
+2. Show the solving process step by step
+3. Write what you're doing: "0 plus 0 is 0" then show the result
+4. Keep it SHORT - minimal text, just the math steps
+5. NO deep explanations - just show how to solve
+6. Use simple language - no math jargon
+7. Write like you're solving on a board: "First...", "Next...", "Then..."
 
-EXAMPLES OF GOOD EXPLANATIONS:
+EXAMPLES OF SIMPLE EXPLANATIONS:
 
 For "Addition":
-- "Addition means putting things together! Like if you have 3 apples and your friend gives you 2 more apples, you add them: 3 + 2 = 5 apples total. You're combining numbers to make a bigger number!"
-
-For "Place Value":
-- "Place value is like organizing your toys! The number 450 has: 4 in the hundreds place (that's 400), 5 in the tens place (that's 50), and 0 in the ones place. It's like having 4 big boxes of 100 toys, 5 boxes of 10 toys, and 0 single toys!"
+"Let me show you:
+  3
++ 2
+---
+  ___
+  
+First, ones: 3 plus 2 is 5
+Write 5:
+  3
++ 2
+---
+  5"
 
 For "Multiplication":
-- "Multiplication is like adding the same number many times! 3 × 4 means: 4 + 4 + 4. That's like having 4 cookies, 3 times. Count them: 4, 8, 12. So 3 × 4 = 12!"
+"Let me solve this:
+  3
+× 4
+---
+  ___
+  
+4 times 3 is 12
+Write 12:
+  3
+× 4
+---
+ 12"
 
-Provide a clear, simple explanation (5-7 sentences) with examples that a grade ${grade} student can easily understand.`
+Provide a clear, SIMPLE step-by-step explanation that a grade ${grade} student can easily follow.`
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini',

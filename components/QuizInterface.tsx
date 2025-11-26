@@ -394,11 +394,39 @@ export default function QuizInterface({
                     isCorrect ? 'text-green-600' : 'text-blue-600'
                   }`}
                 />
-                <div>
+                <div className="flex-1">
                   <h3 className="font-semibold mb-2">
                     {isCorrect ? t('correct') : t('incorrect')}
                   </h3>
-                  <p className="text-sm">{question.explanation}</p>
+                  <div className="text-sm whitespace-pre-line bg-white/50 p-4 rounded-lg border-2 border-gray-300 shadow-inner font-mono">
+                    {question.explanation.split('\n').map((line, idx) => {
+                      // Check if line contains math operations (numbers, +, -, ×, ÷, =)
+                      const isMathLine = /[\d+\-×÷=]/.test(line) && /^\s*[\d+\-×÷=\s]+\s*$/.test(line.trim())
+                      // Check if line is part of a math problem (has numbers and operators)
+                      const isProblemLine = /^\s*[\d+\-×÷\s]+$/.test(line.trim()) && line.trim().length > 2
+                      // Check if line is answer box (___)
+                      const isAnswerBox = /^[\s_]+$/.test(line.trim())
+                      // Check if line is instruction text
+                      const isInstruction = line.trim().length > 0 && !isMathLine && !isProblemLine && !isAnswerBox
+                      
+                      return (
+                        <div 
+                          key={idx} 
+                          className={`py-0.5 ${
+                            isMathLine || isProblemLine
+                              ? 'text-center font-bold text-gray-900 text-base leading-tight' 
+                              : isAnswerBox
+                              ? 'text-center text-gray-500 text-base leading-tight border-b-2 border-dashed border-gray-400'
+                              : isInstruction
+                              ? 'text-gray-700 leading-relaxed text-sm pl-2'
+                              : 'text-gray-600 leading-relaxed'
+                          }`}
+                        >
+                          {line || '\u00A0'}
+                        </div>
+                      )
+                    })}
+                  </div>
                 </div>
               </div>
             </motion.div>
