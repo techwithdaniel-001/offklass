@@ -119,49 +119,19 @@ export default function QuizInterface({
     }
     setShowExplanation(true)
     
-    // AI provides feedback and explanation automatically
+    // Only show explanation automatically for incorrect answers
     const question = questions[currentQuestion]
     const selectedOption = question.options[index]
     
-    setLoadingHint(true)
-    try {
-      if (correct) {
-        // For correct answers, just give positive feedback
-        const hint = await AIService.getQuizHint(
-          question.question,
-          question.options,
-          question.correctAnswer,
-          language,
-          grade,
-          `I selected: ${selectedOption}. Was I right?`
-        )
-        
-        setChatMessages(prev => [
-          ...prev,
-          { role: 'user', content: `I selected: ${selectedOption}` },
-          { role: 'assistant', content: `Great job! 🎉 You got it right! ${hint}` }
-        ])
-      } else {
-        // For incorrect answers, show the board-style explanation directly in chat
-        setChatMessages(prev => [
-          ...prev,
-          { role: 'user', content: `I selected: ${selectedOption}` },
-          { role: 'assistant', content: question.explanation }
-        ])
-      }
-    } catch (error) {
-      console.error('Error getting AI feedback:', error)
-      const defaultMessage = correct
-        ? 'Great job! 🎉 You got it right! Would you like me to explain more about this concept?'
-        : 'Not quite, but keep learning! 💪 Would you like me to explain the correct answer?'
+    if (!correct) {
+      // For incorrect answers, show the board-style explanation directly in chat
       setChatMessages(prev => [
         ...prev,
-        { role: 'user', content: `I selected: ${question.options[index]}` },
-        { role: 'assistant', content: defaultMessage }
+        { role: 'user', content: `I selected: ${selectedOption}` },
+        { role: 'assistant', content: question.explanation }
       ])
-    } finally {
-      setLoadingHint(false)
     }
+    // For correct answers, don't add anything to chat - user can ask if they want explanation
   }
 
   const handleNext = () => {
