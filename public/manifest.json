@@ -1,0 +1,50 @@
+{
+  "name": "ofklass - Math Learning Platform",
+  "short_name": "ofklass",
+  "description": "Interactive math learning platform for grades 3-8 with AI-powered quizzes and flashcards",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0ea5e9",
+  "theme_color": "#0ea5e9",
+  "orientation": "portrait-primary",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "/assets/offklass.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/offklass.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/offklass.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/offklass.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["education", "learning"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "Go to your learning dashboard",
+      "url": "/dashboard",
+      "icons": [{ "src": "/assets/offklass.png", "sizes": "192x192" }]
+    }
+  ]
+}
+
