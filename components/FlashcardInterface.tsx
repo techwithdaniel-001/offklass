@@ -56,7 +56,11 @@ export default function FlashcardInterface({
   }
 
   const handleNext = () => {
-    setStudiedCards(new Set([...studiedCards, currentIndex]))
+    setStudiedCards(prev => {
+      const newSet = new Set(prev)
+      newSet.add(currentIndex)
+      return newSet
+    })
     if (currentIndex < flashcards.length - 1) {
       setCurrentIndex(currentIndex + 1)
       setIsFlipped(false)

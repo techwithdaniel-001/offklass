@@ -90,7 +90,7 @@ export default function LearningPath({ grade }: LearningPathProps) {
 
   // Get unique topics in a unit
   const getUnitTopics = (unitLessons: typeof allLessons) => {
-    const topicIds = [...new Set(unitLessons.map(l => l.topicId))]
+    const topicIds = Array.from(new Set(unitLessons.map(l => l.topicId)))
     return topicIds.map(id => topics.find(t => t.id === id)).filter(Boolean)
   }
 
