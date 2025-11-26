@@ -32,11 +32,14 @@ export async function POST(request: NextRequest) {
 
     const prompt = `You are a math teacher writing on a whiteboard for grade ${grade} students. The lesson is about: ${lessonContext}.
 
+CRITICAL: You MUST calculate the correct answer yourself FIRST and verify it's correct before creating the explanation.
+
 Create 3-5 quiz questions in ${languageName}. Each question should:
 1. Be appropriate for grade ${grade} level
 2. Test understanding of the concept
 3. Have 4 multiple choice options
 4. Include a SHORT, step-by-step explanation like you're writing on a board
+5. The explanation MUST show the CORRECT solving process with CORRECT math
 
 CRITICAL: For the explanation, you MUST use this EXACT format - NO DEVIATIONS:
 
@@ -126,6 +129,35 @@ Write 30:
 ----
  300"
 
+Example for subtraction with borrowing (4.6 - 1.9):
+"Let me solve this:
+  4.6
+- 1.9
+----
+
+First, tenths: 6 minus 9 cannot, borrow 1
+Now, tenths: 16 minus 9 is 7
+Write 7:
+  4.6
+- 1.9
+----
+   .7
+  ↑
+  (borrowed 1, so 4 becomes 3)
+
+Next, ones: 3 minus 1 is 2
+Write 2:
+  4.6
+- 1.9
+----
+ 2.7"
+
+CRITICAL MATH RULES:
+- For subtraction with borrowing: After borrowing, the number decreases by 1
+  Example: 4.6 - 1.9, borrow from 4 → 4 becomes 3 → then 3 - 1 = 2 (NOT 4 - 2)
+- ALWAYS calculate the answer yourself FIRST and verify it's correct
+- Double-check EVERY step before writing it
+
 Return a JSON array with this exact format:
 [
   {
@@ -144,35 +176,15 @@ Only return the JSON array, no other text.`
       messages: [
         {
           role: 'system',
-          content: `You are a math teacher writing on a whiteboard. For explanations, you MUST use this EXACT format:
-1. Start with "Let me solve this:"
-2. Show problem stacked (no answer box needed)
-3. Solve step-by-step: "First, [column]: [calculation]" then show updated problem
-4. After each step, show the updated answer
-5. Keep it SHORT - just math steps, no extra text
-6. Format example:
-"Let me solve this:
-  23
-×  4
-----
-
-First, ones: 4 times 3 is 12
-Write 2, carry 1:
-  23
-×  4
-----
-   2
-  ↑
-  (carry 1)
-
-Next, tens: 4 times 2 is 8, plus 1 is 9
-Write 9:
-  23
-×  4
-----
-  92"
-
-Always respond with valid JSON only.`,
+          content: `You are a math teacher writing on a whiteboard. CRITICAL RULES:
+1. ALWAYS calculate the answer yourself FIRST and verify it's correct
+2. For subtraction with borrowing: After borrowing, the number you borrowed FROM decreases by 1
+   Example: 4.6 - 1.9, after borrowing from 4, it becomes 3, so 3 - 1 = 2 (NOT 4 - 2)
+3. Double-check EVERY calculation before writing it
+4. Use EXACT format: Start with "Let me solve this:", show problem stacked, solve step-by-step
+5. After each step, show updated problem with answer
+6. Keep it SHORT - just math steps
+7. Always respond with valid JSON only.`,
         },
         {
           role: 'user',

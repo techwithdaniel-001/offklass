@@ -108,25 +108,30 @@ export default function QuizInterface({
     
     setLoadingHint(true)
     try {
-      // Get AI explanation and feedback
-      const hint = await AIService.getQuizHint(
-        question.question,
-        question.options,
-        question.correctAnswer,
-        language,
-        grade,
-        `I selected: ${selectedOption}. ${correct ? 'Was I right?' : 'Can you explain why this is wrong and help me understand?'}`
-      )
-      
-      const feedbackMessage = correct
-        ? `Great job! 🎉 You got it right! ${hint}`
-        : `Not quite, but that's okay! 💪 ${hint}`
-      
-      setChatMessages(prev => [
-        ...prev,
-        { role: 'user', content: `I selected: ${selectedOption}` },
-        { role: 'assistant', content: feedbackMessage }
-      ])
+      if (correct) {
+        // For correct answers, just give positive feedback
+        const hint = await AIService.getQuizHint(
+          question.question,
+          question.options,
+          question.correctAnswer,
+          language,
+          grade,
+          `I selected: ${selectedOption}. Was I right?`
+        )
+        
+        setChatMessages(prev => [
+          ...prev,
+          { role: 'user', content: `I selected: ${selectedOption}` },
+          { role: 'assistant', content: `Great job! 🎉 You got it right! ${hint}` }
+        ])
+      } else {
+        // For incorrect answers, show the board-style explanation directly in chat
+        setChatMessages(prev => [
+          ...prev,
+          { role: 'user', content: `I selected: ${selectedOption}` },
+          { role: 'assistant', content: question.explanation }
+        ])
+      }
     } catch (error) {
       console.error('Error getting AI feedback:', error)
       const defaultMessage = correct
@@ -571,6 +576,43 @@ export default function QuizInterface({
                   ) : (
                     <div className="space-y-3">
                       {(() => {
+                        // Check if this is a board-style explanation (contains "Let me solve this:" or math problem format)
+                        const isBoardStyle = msg.content.includes('Let me solve this:') || 
+                                          /^\s*\d+\s*[\+\-×÷]\s*\d+/.test(msg.content) ||
+                                          msg.content.includes('----') ||
+                                          msg.content.includes('Write') && msg.content.includes('carry')
+                        
+                        if (isBoardStyle) {
+                          // Format as board-style explanation
+                          return (
+                            <div className="text-sm whitespace-pre-line font-mono bg-white/50 p-4 rounded-lg border-2 border-gray-300 shadow-inner">
+                              {msg.content.split('\n').map((line, idx) => {
+                                const isMathLine = /[\d+\-×÷=]/.test(line) && /^\s*[\d+\-×÷=\s]+\s*$/.test(line.trim())
+                                const isProblemLine = /^\s*[\d+\-×÷\s]+$/.test(line.trim()) && line.trim().length > 2
+                                const isAnswerBox = /^[\s_]+$/.test(line.trim())
+                                const isInstruction = line.trim().length > 0 && !isMathLine && !isProblemLine && !isAnswerBox
+                                
+                                return (
+                                  <div 
+                                    key={idx} 
+                                    className={`py-0.5 ${
+                                      isMathLine || isProblemLine
+                                        ? 'text-center font-bold text-gray-900 text-base leading-tight' 
+                                        : isAnswerBox
+                                        ? 'text-center text-gray-500 text-base leading-tight border-b-2 border-dashed border-gray-400'
+                                        : isInstruction
+                                        ? 'text-gray-700 leading-relaxed text-sm pl-2'
+                                        : 'text-gray-600 leading-relaxed'
+                                    }`}
+                                  >
+                                    {line || '\u00A0'}
+                                  </div>
+                                )
+                              })}
+                            </div>
+                          )
+                        }
+                        
                         const formatted = formatAIResponse(msg.content)
                         
                         // Split text into sentences for better formatting

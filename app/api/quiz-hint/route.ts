@@ -27,50 +27,33 @@ export async function POST(request: NextRequest) {
 
     const languageName = languageNames[language] || 'English'
 
-    const prompt = `You are a math teacher writing on a whiteboard for a grade ${grade} student. You MUST follow this EXACT format.
+    const prompt = `You are a math teacher. You MUST use this EXACT format - copy it exactly.
 
-IMPORTANT: You MUST know the correct answer to guide the student properly. Calculate the answer yourself first, then guide them.
+CRITICAL: Calculate the answer yourself FIRST and verify it matches the correct answer: ${options[correctAnswer]}
 
 The student is working on: "${question}"
 
 Options:
 ${options.map((opt: string, idx: number) => `${idx + 1}. ${opt}`).join('\n')}
 
-CORRECT ANSWER: Option ${correctAnswer + 1} (${options[correctAnswer]}) is the correct answer. You know this, but NEVER tell the student directly.
+CORRECT ANSWER: Option ${correctAnswer + 1} (${options[correctAnswer]}) is the correct answer.
+VERIFY: Calculate ${question} yourself. The answer should be ${options[correctAnswer]}. If your calculation doesn't match, recalculate until it does.
 
 ${userAttempt ? `The student said: "${userAttempt}"` : 'The student needs help.'}
 
-CRITICAL FORMATTING RULES - Follow EXACTLY:
-1. Start with: "Let me write this on the board:"
-2. Show the problem stacked with answer box:
-   [number1]
-   [operator] [number2]
-   ------
-     ___
-3. Then solve step-by-step, showing updated answer after EACH step
-4. After each step, show the updated problem with what you wrote
-5. Use this EXACT format for each step:
-   "First, [column name]: [calculation]"
-   "Write [digit], [carry if needed]:"
-   [show updated problem with answer so far]
-6. Keep it SHORT - minimal text, just the math steps
-7. NO extra explanations - just the solving process
-8. NEVER give the direct answer
-9. NEVER say which option is correct
-10. Respond in ${languageName}
+YOU MUST USE THIS EXACT FORMAT - NO DEVIATIONS:
 
-EXAMPLE FORMAT (follow this exactly):
-"Let me write this on the board:
+For multiplication (23 × 4):
+"Let me solve this:
   23
 ×  4
------
-  ___
+----
 
 First, ones: 4 times 3 is 12
 Write 2, carry 1:
   23
 ×  4
------
+----
    2
   ↑
   (carry 1)
@@ -79,53 +62,27 @@ Next, tens: 4 times 2 is 8, plus 1 is 9
 Write 9:
   23
 ×  4
------
+----
   92"
 
-YOU MUST FOLLOW THIS EXACT FORMAT - NO DEVIATIONS:
-
-For "23 × 4" (correct answer is 92):
-"Let me write this on the board:
-  23
-×  4
------
-  ___
-
-First, ones: 4 times 3 is 12
-Write 2, carry 1:
-  23
-×  4
------
-   2
-  ↑
-  (carry 1)
-
-Next, tens: 4 times 2 is 8, plus 1 is 9
-Write 9:
-  23
-×  4
------
-  92"
-
-For "450 + 250" (correct answer is 700):
-"Let me write this on the board:
+For addition (450 + 250):
+"Let me solve this:
   450
 + 250
------
-  ___
+----
 
 First, ones: 0 plus 0 is 0
 Write 0:
   450
 + 250
------
+----
    0
 
 Next, tens: 5 plus 5 is 10
 Write 0, carry 1:
   450
 + 250
------
+----
   00
   ↑
   (carry 1)
@@ -134,44 +91,63 @@ Then, hundreds: 4 plus 2 plus 1 is 7
 Write 7:
   450
 + 250
------
+----
  700"
 
+For subtraction with borrowing (4.6 - 1.9):
+"Let me solve this:
+  4.6
+- 1.9
+----
+
+First, tenths: 6 minus 9 cannot, borrow 1
+Now, tenths: 16 minus 9 is 7
+Write 7:
+  4.6
+- 1.9
+----
+   .7
+  ↑
+  (borrowed 1, so 4 becomes 3)
+
+Next, ones: 3 minus 1 is 2
+Write 2:
+  4.6
+- 1.9
+----
+ 2.7"
+
 CRITICAL RULES:
-1. ALWAYS calculate the answer yourself first to make sure you guide correctly
-2. If the student gives an answer, check if it matches the correct answer (${options[correctAnswer]})
-   - If CORRECT: "That's right! Great job! Here's why: [explain the steps]"
-   - If WRONG: "Not quite, but you're on the right track! Let me help you think through this: [guide them step by step]"
-3. NEVER give the answer directly, but make sure your guidance leads to the CORRECT answer
-4. Break EVERYTHING into the smallest steps
-5. Use simple numbers first, then show how it applies to bigger numbers
-6. Double-check your math - if you say "4 + 3 = 7, add zeros = 700", make sure that's actually correct for the problem!
-7. Make it FUN and EASY to understand
+1. ALWAYS calculate the answer yourself FIRST: ${question} = ?
+2. VERIFY your answer matches: ${options[correctAnswer]}
+3. For subtraction with borrowing: After borrowing, the number decreases by 1
+   Example: 4.6 - 1.9, borrow from 4, so 4 becomes 3, then 3 - 1 = 2 (NOT 4 - 2)
+4. Double-check EVERY step before writing it
+5. Start with "Let me solve this:"
+6. Show problem stacked (no answer box needed)
+7. After each step, show the updated problem with answer so far
+8. Use format: "First, [column]: [calculation]" then "Write [digit], [carry/borrow if needed]:"
+9. Keep it SHORT - just math steps, no extra text
+10. NO phrases like "Not quite" or "Let's check" - just solve
+11. Respond in ${languageName}
 
-CRITICAL: You MUST follow the exact format shown in the examples above. 
-- Start with "Let me write this on the board:"
-- Show the problem with answer box (___)
-- Solve step-by-step, showing updated answer after EACH step
-- Keep it SHORT - just the math steps, no extra text
-- NO phrases like "Not quite" or "Let's check" - just solve the problem
-- Show the final answer at the end
-
-Provide ONLY the solving steps in the exact format shown above.`
+Now solve the student's problem using this EXACT format.`
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
         {
           role: 'system',
-          content: `You are a math teacher writing on a whiteboard. You MUST follow the EXACT format provided:
-1. Start with "Let me write this on the board:"
-2. Show problem stacked with answer box (___)
-3. Solve step-by-step, showing updated answer after EACH step
-4. Use format: "First, [column]: [calculation]" then show updated problem
-5. Keep it SHORT - just math steps, no extra text
-6. NO phrases like "Not quite" or "Let's check" - just solve the problem
-7. Show final answer at the end
-8. ALWAYS calculate correctly and double-check your math.`,
+          content: `You are a math teacher. CRITICAL RULES:
+1. ALWAYS calculate the answer yourself FIRST and verify it's correct
+2. For subtraction with borrowing: After borrowing, the number decreases by 1
+   Example: 4.6 - 1.9, borrow from 4 → 4 becomes 3 → 3 - 1 = 2 (NOT 4 - 2)
+3. Double-check EVERY calculation before writing it
+4. Use EXACT format: "Let me solve this:", show problem stacked, solve step-by-step
+5. After each step, show updated problem with answer
+6. Keep it SHORT - just math steps
+7. NO extra text - just solve
+8. ALWAYS calculate correctly - verify your math matches the correct answer`,
         },
         {
           role: 'user',
