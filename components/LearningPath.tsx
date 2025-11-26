@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useStore } from '@/lib/store'
 import { getTranslation } from '@/lib/translations'
-import { getLessonsByGrade, getTopicsByGrade } from '@/lib/curriculum'
+import { getLessonsByGrade, getTopicsByGrade } from '@/lib/curriculum/index'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Lock, CheckCircle, Play, Star, Sparkles, Zap, BookOpen, Trophy, Gamepad2, X, Eye } from 'lucide-react'
 
@@ -22,7 +22,8 @@ export default function LearningPath({ grade }: LearningPathProps) {
   const t = (key: string) => getTranslation(user.language, key)
   // Ensure grade is a string
   const gradeStr = String(grade)
-  const allLessons = getLessonsByGrade(gradeStr)
+  // Use school mapping if available (default to 'regina' for backward compatibility)
+  const allLessons = getLessonsByGrade(gradeStr, user.school || 'regina')
   const topics = getTopicsByGrade(gradeStr)
 
   // Get unlocked lessons

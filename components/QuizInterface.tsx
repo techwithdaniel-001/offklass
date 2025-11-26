@@ -240,7 +240,12 @@ export default function QuizInterface({
         setChatMessages([])
         setShowCompletionScreen(false)
       } else {
-        alert('Unable to generate retry questions. Please try again later.')
+        // If no questions generated, show helpful message
+        setChatMessages(prev => [...prev, {
+          role: 'assistant',
+          content: 'I had trouble generating new practice questions right now. You can still review the questions you got wrong and try the quiz again, or ask me to explain any concept you\'re struggling with!'
+        }])
+        setShowCompletionScreen(false)
       }
     } catch (error) {
       console.error('Error retrying quiz:', error)

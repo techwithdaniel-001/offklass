@@ -23,6 +23,7 @@ export interface User {
   name: string
   grade: string
   language: string
+  school: string // School ID: 'regina', 'nepal', 'ocean-man'
   points: number
   level: number
   completedLessons: string[]
@@ -69,6 +70,7 @@ export const useStore = create<AppState & { _hasHydrated: boolean }>()(
       setUser: (user) => {
         const userWithDefaults = {
           ...user,
+          school: user.school || 'regina', // Default to regina for backward compatibility
           earnedBadges: user.earnedBadges || [],
           perfectQuizzes: user.perfectQuizzes || 0,
           streak: user.streak || 0,

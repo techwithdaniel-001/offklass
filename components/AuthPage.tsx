@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useStore } from '@/lib/store'
 import { languages, getTranslation } from '@/lib/translations'
+import { schools, type SchoolId } from '@/lib/schools'
 import { motion } from 'framer-motion'
 import { BookOpen, Users, Trophy, Sparkles } from 'lucide-react'
 
@@ -12,6 +13,7 @@ export default function AuthPage() {
   const [name, setName] = useState('')
   const [password, setPassword] = useState('')
   const [grade, setGrade] = useState('')
+  const [school, setSchool] = useState<SchoolId>('regina') // Default to Regina
   const [language, setLanguage] = useState('en')
   const [error, setError] = useState('')
   const router = useRouter()
@@ -52,6 +54,7 @@ export default function AuthPage() {
       name,
       grade,
       language,
+      school,
       points: 0,
       level: 1,
       completedLessons: [],
@@ -179,6 +182,25 @@ export default function AuthPage() {
                 placeholder="Enter your name"
                 required
               />
+            </div>
+
+            {/* School Selection - Always shown and REQUIRED */}
+            <div className="bg-purple-50 border-2 border-purple-200 rounded-xl p-4">
+              <label className="block text-sm font-bold text-gray-900 mb-2">
+                🏫 School * <span className="text-xs font-normal text-gray-600">(Required)</span>
+              </label>
+              <select
+                value={school}
+                onChange={(e) => setSchool(e.target.value as SchoolId)}
+                className="w-full px-4 py-3 border-2 border-purple-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all bg-white font-medium"
+                required
+              >
+                {schools.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name} - {s.location}
+                  </option>
+                ))}
+              </select>
             </div>
 
             {/* Grade Selection - Always shown and REQUIRED */}
