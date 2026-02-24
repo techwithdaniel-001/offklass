@@ -22,7 +22,8 @@ export class AIService {
     lessonId: string,
     grade: string,
     language: string,
-    lessonTitle?: string
+    lessonTitle?: string,
+    failedConcepts?: string[]
   ): Promise<QuizQuestion[]> {
     try {
       const response = await fetch('/api/quiz', {
@@ -35,6 +36,7 @@ export class AIService {
           grade,
           language,
           lessonTitle,
+          ...(failedConcepts?.length ? { failedConcepts } : {}),
         }),
       })
 

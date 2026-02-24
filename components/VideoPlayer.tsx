@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { getTranslation } from '@/lib/translations'
 import { getTopicById } from '@/lib/curriculum'
 import { useStore } from '@/lib/store'
-import { CheckCircle, Sparkles, Clock, ArrowRight, Play, BookOpen, PenTool, X } from 'lucide-react'
+import { CheckCircle, Sparkles, Clock, ArrowRight, Play, Pause, BookOpen, PenTool, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface VideoPlayerProps {
@@ -113,6 +113,48 @@ export default function VideoPlayer({
   useEffect(() => {
     if (resolvedVideoUrl) setError(null)
   }, [resolvedVideoUrl])
+
+  const [showPauseHint, setShowPauseHint] = useState(false)
+  useEffect(() => {
+    if (!isPlaying) setShowPauseHint(false)
+    else {
+      setShowPauseHint(true)
+      const t = setTimeout(() => setShowPauseHint(false), 2000)
+      return () => clearTimeout(t)
+    }
+  }, [isPlaying])
+
+  // Single handler: click anywhere on video area = play if paused, pause if playing
+  const togglePlayPause = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation()
+    const video = videoRef.current
+    if (!video) return
+    setError(null)
+    if (video.paused) {
+      const p = video.play()
+      if (p?.then) {
+        p.then(() => {
+          setIsPaused(false)
+          setIsPlaying(true)
+          setError(null)
+        }).catch(() => {
+          video.muted = true
+          video.play().then(() => {
+            setIsPaused(false)
+            setIsPlaying(true)
+            setError(null)
+            video.muted = false
+          }).catch(() => {
+            setError('Tap the video controls below to play.')
+          })
+        })
+      }
+    } else {
+      video.pause()
+      setIsPaused(true)
+      setIsPlaying(false)
+    }
+  }, [])
 
   // Throttled progress update for better performance
   const updateProgress = useCallback(() => {
@@ -322,8 +364,9 @@ export default function VideoPlayer({
               controls
               playsInline
               preload="auto"
-              className="w-full h-full object-contain"
+              className="w-full h-full object-contain cursor-pointer"
               style={{ maxWidth: '100%', maxHeight: '100%' }}
+              onClick={togglePlayPause}
               onLoadedMetadata={() => {
                 if (videoRef.current && videoRef.current.paused) {
                   setIsPaused(true)
@@ -339,40 +382,41 @@ export default function VideoPlayer({
             />
           )}
           
-          {/* Play Button Overlay - Visible when paused; leave bottom strip so native video controls are clickable */}
-          {isPaused && (
-            <div 
-              className="absolute inset-x-0 top-0 bottom-12 flex items-center justify-center bg-black/30 backdrop-blur-sm cursor-pointer z-50"
-              onClick={(e) => {
-                e.stopPropagation()
-                const video = videoRef.current
-                if (video) {
-                  setIsPaused(false)
-                  setIsPlaying(true)
-                  const p = video.play()
-                  if (p && typeof p.catch === 'function') {
-                    p.catch((err: unknown) => {
-                      console.warn('Play failed:', err)
-                      setIsPaused(true)
-                      setIsPlaying(false)
-                      setError('Playback could not start. Try using the video controls below.')
-                    })
-                  }
-                }
-              }}
-              onMouseDown={(e) => e.stopPropagation()}
-            >
+          {/* Click-anywhere overlay: play when paused, pause when playing. Leave bottom strip for native controls. */}
+          <div
+            className={`absolute inset-x-0 top-0 bottom-12 flex items-center justify-center cursor-pointer z-50 transition-colors ${
+              isPaused ? 'bg-black/30 backdrop-blur-sm' : 'bg-transparent'
+            } ${!isPaused && !showPauseHint ? 'opacity-0 hover:opacity-80' : ''}`}
+            onClick={togglePlayPause}
+            onMouseDown={(e) => e.stopPropagation()}
+            role="button"
+            aria-label={isPaused ? 'Play video' : 'Pause video'}
+          >
+            {isPaused ? (
               <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 bg-white rounded-full flex items-center justify-center shadow-2xl border-4 border-green-500 hover:bg-green-50 transition-all pointer-events-auto"
+                className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 bg-white rounded-full flex items-center justify-center shadow-2xl border-4 border-green-500 hover:bg-green-50 transition-all pointer-events-none"
                 whileHover={{ scale: 1.15 }}
                 whileTap={{ scale: 0.9 }}
               >
                 <Play className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 text-green-600 ml-1" fill="currentColor" />
               </motion.div>
-            </div>
-          )}
+            ) : (
+              <AnimatePresence>
+                {showPauseHint && (
+                  <motion.div
+                    initial={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ duration: 0.3 }}
+                    className="w-16 h-16 sm:w-20 sm:h-20 bg-white/90 rounded-full flex items-center justify-center shadow-xl border-4 border-green-500 pointer-events-none"
+                  >
+                    <Pause className="w-8 h-8 sm:w-10 sm:h-10 text-green-600" fill="currentColor" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            )}
+          </div>
           
           {/* Video Info Overlay - Duolingo Style - Hidden when playing */}
           {isPaused && (
@@ -551,7 +595,7 @@ export default function VideoPlayer({
                   {t('videoWatched')}! 🎉
                 </h3>
                 <p className="text-base text-green-800 leading-relaxed font-medium">
-                  {t('readyForQuiz')} - You're ready to test your knowledge!
+                  {t('readyForQuiz')} — Tap the button below to go to the quiz and test your knowledge!
                 </p>
               </div>
             </div>

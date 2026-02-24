@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useStore } from '@/lib/store'
 import { getLessonById, getLessonsByGrade, Lesson } from '@/lib/curriculum/index'
@@ -114,36 +114,20 @@ export default function LearningFlow({ lesson }: LearningFlowProps) {
     setFlashcardsCompleted(true)
   }
 
-  // Check if lesson is fully completed (video + quiz OR video + flashcards + quiz)
-  // Allow progression if they've done video and quiz (flashcards are optional)
-  useEffect(() => {
-    const hasCompletedVideo = videoWatched
-    const hasCompletedQuiz = quizCompleted
-    const hasCompletedFlashcards = flashcardsCompleted
-    
-    // Lesson is complete if: video + quiz (flashcards optional but recommended)
-    if (hasCompletedVideo && hasCompletedQuiz && !user.completedLessons.includes(lesson.id)) {
+  // Go to next lesson: called when user clicks "Go to next lesson" after quiz (lesson completes and we navigate)
+  const handleGoToNextLesson = useCallback(() => {
+    if (!user.completedLessons.includes(lesson.id)) {
       completeLesson(lesson.id)
-      addPoints(50) // Bonus points for completing entire lesson
-      
-      // Find the next lesson
-      const allLessons = getLessonsByGrade(lesson.grade, user.school || 'regina')
-      const currentIndex = allLessons.findIndex(l => l.id === lesson.id)
-      const nextLesson = allLessons[currentIndex + 1]
-      
-      if (nextLesson) {
-        // Show completion message briefly, then auto-navigate to next lesson
-        setCurrentStep('complete')
-        // Navigate immediately to next lesson (completion screen will show briefly)
-        setTimeout(() => {
-          router.push(`/learn/${nextLesson.id}`)
-        }, 1500) // Show completion message for 1.5 seconds
-      } else {
-        // No more lessons, show completion screen
-        setCurrentStep('complete')
-      }
+      addPoints(50) // Bonus for completing lesson
     }
-  }, [videoWatched, quizCompleted, flashcardsCompleted, lesson.id, lesson.grade, user.completedLessons, user.school, completeLesson, addPoints, router])
+    setCurrentStep('complete')
+    const allLessons = getLessonsByGrade(lesson.grade, user.school || 'regina')
+    const currentIndex = allLessons.findIndex(l => l.id === lesson.id)
+    const nextLesson = allLessons[currentIndex + 1]
+    if (nextLesson) {
+      setTimeout(() => router.push(`/learn/${nextLesson.id}`), 1200)
+    }
+  }, [lesson.id, lesson.grade, user.completedLessons, user.school, completeLesson, addPoints, router])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-cyan-50">
@@ -270,6 +254,7 @@ export default function LearningFlow({ lesson }: LearningFlowProps) {
                 language={user.language}
                 onComplete={handleQuizComplete}
                 onBack={() => setCurrentStep('video')}
+                onGoToNextLesson={handleGoToNextLesson}
               />
             </motion.div>
           )}

@@ -15,6 +15,7 @@ interface QuizInterfaceProps {
   language: string
   onComplete: (points: number, isPerfect: boolean) => void
   onBack: () => void
+  onGoToNextLesson?: () => void
 }
 
 export default function QuizInterface({
@@ -24,6 +25,7 @@ export default function QuizInterface({
   language,
   onComplete,
   onBack,
+  onGoToNextLesson,
 }: QuizInterfaceProps) {
   const [questions, setQuestions] = useState<QuizQuestion[]>([])
   const [currentQuestion, setCurrentQuestion] = useState(0)
@@ -237,60 +239,59 @@ export default function QuizInterface({
   const handleRetryFailed = async () => {
     setIsRetrying(true)
     setLoading(true)
-    
+    setShowCompletionScreen(false)
     try {
-      // Generate new questions for failed concepts
-      const retryQuestions: QuizQuestion[] = []
-      
-      for (const failedQuestion of failedQuestions) {
-        try {
-          const practiceQuestion = await AIService.generatePracticeQuestion(
-            lessonId,
-            grade,
-            language,
-            lessonTitle,
-            failedQuestion.question // Use failed question as context
-          )
-          retryQuestions.push(practiceQuestion)
-        } catch (error) {
-          console.error('Error generating retry question:', error)
-        }
-      }
-      
+      const failedConcepts = failedQuestions.map(q => q.question)
+      const retryQuestions = await AIService.generateQuiz(
+        lessonId,
+        grade,
+        language,
+        lessonTitle,
+        failedConcepts
+      )
       if (retryQuestions.length > 0) {
-        // Reset quiz state and add retry questions
         setQuestions(retryQuestions)
         setCurrentQuestion(0)
         setSelectedAnswer(null)
         setShowExplanation(false)
         setIsCorrect(null)
         setScore(0)
-        setFailedQuestions([]) // Reset failed questions for retry
+        setFailedQuestions([])
         setChatMessages([])
-        setShowCompletionScreen(false)
+        clearQuizProgress(lessonId)
       } else {
-        // If no questions generated, show helpful message
         setChatMessages(prev => [...prev, {
           role: 'assistant',
-          content: 'I had trouble generating new practice questions right now. You can still review the questions you got wrong and try the quiz again, or ask me to explain any concept you\'re struggling with!'
+          content: 'I had trouble generating new questions right now. You can try again or go to the next lesson.'
         }])
-        setShowCompletionScreen(false)
       }
     } catch (error) {
       console.error('Error retrying quiz:', error)
-      alert('Error generating retry questions. Please try again.')
+      setChatMessages(prev => [...prev, {
+        role: 'assistant',
+        content: 'Something went wrong. You can try again or go to the next lesson.'
+      }])
     } finally {
       setLoading(false)
       setIsRetrying(false)
     }
   }
 
-  const handleFinishQuiz = () => {
-    // Clear quiz progress since it's completed
+  const handleGoToNextLesson = () => {
     clearQuizProgress(lessonId)
-    // Hide completion screen - navigation will be handled by LearningFlow
     setShowCompletionScreen(false)
-    // The quiz is already marked as complete in handleNext, so we just need to close the screen
+    onGoToNextLesson?.()
+  }
+
+  const handleRetrySameQuiz = () => {
+    setCurrentQuestion(0)
+    setSelectedAnswer(null)
+    setShowExplanation(false)
+    setIsCorrect(null)
+    setScore(0)
+    setFailedQuestions([])
+    setShowCompletionScreen(false)
+    setChatMessages([])
   }
 
   const handleGetHint = async () => {
@@ -513,14 +514,22 @@ export default function QuizInterface({
                 You got {score} out of {totalQuestions} right!
               </p>
               <p className="text-lg text-gray-600 mb-8">
-                Perfect! You learned this! 🌟
+                Perfect! You can try again for more practice or go to the next lesson.
               </p>
-              <button
-                onClick={handleFinishQuiz}
-                className="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold text-lg hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-lg"
-              >
-                Go to next lesson
-              </button>
+              <div className="flex flex-wrap gap-4 justify-center">
+                <button
+                  onClick={handleRetrySameQuiz}
+                  className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-semibold text-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg"
+                >
+                  Try again
+                </button>
+                <button
+                  onClick={handleGoToNextLesson}
+                  className="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold text-lg hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-lg"
+                >
+                  Go to next lesson
+                </button>
+              </div>
             </>
           ) : (
             <>
@@ -534,21 +543,21 @@ export default function QuizInterface({
                 You got {score} out of {totalQuestions} right!
               </p>
               <p className="text-lg text-gray-600 mb-8">
-                You missed {totalQuestions - score} question{totalQuestions - score !== 1 ? 's' : ''}. Want to try again?
+                Try again and the AI will make questions based on what you missed, or go to the next lesson.
               </p>
-              <div className="flex gap-4 justify-center">
+              <div className="flex flex-wrap gap-4 justify-center">
                 <button
                   onClick={handleRetryFailed}
                   disabled={isRetrying}
                   className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-semibold text-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg disabled:opacity-50"
                 >
-                  {isRetrying ? 'Making questions...' : 'Yes, let me try again!'}
+                  {isRetrying ? 'Making questions...' : 'Try again (AI focuses on what you missed)'}
                 </button>
                 <button
-                  onClick={handleFinishQuiz}
-                  className="px-8 py-4 bg-gray-300 text-gray-700 rounded-xl font-semibold text-lg hover:bg-gray-400 transition-all duration-200"
+                  onClick={handleGoToNextLesson}
+                  className="px-8 py-4 bg-gray-200 text-gray-800 rounded-xl font-semibold text-lg hover:bg-gray-300 transition-all duration-200"
                 >
-                  Keep going
+                  Go to next lesson
                 </button>
               </div>
             </>

@@ -9,7 +9,10 @@ function getOpenAI() {
 
 export async function POST(request: NextRequest) {
   try {
-    const { lessonId, grade, language, lessonTitle } = await request.json()
+    const { lessonId, grade, language, lessonTitle, failedConcepts } = await request.json()
+    const conceptsToFocus = Array.isArray(failedConcepts) && failedConcepts.length > 0
+      ? failedConcepts.filter((c: unknown) => typeof c === 'string').slice(0, 20)
+      : []
 
     if (!process.env.OPENAI_API_KEY) {
       return NextResponse.json(
@@ -32,7 +35,10 @@ export async function POST(request: NextRequest) {
 
     const languageName = languageNames[language] || 'English'
 
-    const prompt = `You are a math teacher writing on a whiteboard for grade ${grade} students (use very simple words like you're talking to a 5-year-old). The lesson is about: ${lessonContext}.
+    const focusInstruction = conceptsToFocus.length > 0
+      ? `\nIMPORTANT: The student got these questions/concepts wrong. Create questions that FOCUS on practicing these same concepts (rephrased, different numbers):\n${conceptsToFocus.map((c: string) => `- ${c}`).join('\n')}\n`
+      : ''
+    const prompt = `You are a math teacher writing on a whiteboard for grade ${grade} students (use very simple words like you're talking to a 5-year-old). The lesson is about: ${lessonContext}.${focusInstruction}
 
 CRITICAL: You MUST calculate the correct answer yourself FIRST and verify it's correct before creating the explanation.
 
