@@ -321,7 +321,7 @@ export default function VideoPlayer({
               src={actualVideoUrl}
               controls
               playsInline
-              preload="metadata"
+              preload="auto"
               className="w-full h-full object-contain"
               style={{ maxWidth: '100%', maxHeight: '100%' }}
               onLoadedMetadata={() => {
@@ -339,14 +339,25 @@ export default function VideoPlayer({
             />
           )}
           
-          {/* Play Button Overlay - Always visible when paused */}
+          {/* Play Button Overlay - Visible when paused; leave bottom strip so native video controls are clickable */}
           {isPaused && (
             <div 
-              className="absolute inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm cursor-pointer z-50"
+              className="absolute inset-x-0 top-0 bottom-12 flex items-center justify-center bg-black/30 backdrop-blur-sm cursor-pointer z-50"
               onClick={(e) => {
                 e.stopPropagation()
-                if (videoRef.current) {
-                  videoRef.current.play()
+                const video = videoRef.current
+                if (video) {
+                  setIsPaused(false)
+                  setIsPlaying(true)
+                  const p = video.play()
+                  if (p && typeof p.catch === 'function') {
+                    p.catch((err: unknown) => {
+                      console.warn('Play failed:', err)
+                      setIsPaused(true)
+                      setIsPlaying(false)
+                      setError('Playback could not start. Try using the video controls below.')
+                    })
+                  }
                 }
               }}
               onMouseDown={(e) => e.stopPropagation()}
