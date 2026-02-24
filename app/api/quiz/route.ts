@@ -30,16 +30,18 @@ export async function POST(request: NextRequest) {
 
     const languageName = languageNames[language] || 'English'
 
-    const prompt = `You are a math teacher writing on a whiteboard for grade ${grade} students. The lesson is about: ${lessonContext}.
+    const prompt = `You are a math teacher writing on a whiteboard for grade ${grade} students (use very simple words like you're talking to a 5-year-old). The lesson is about: ${lessonContext}.
 
 CRITICAL: You MUST calculate the correct answer yourself FIRST and verify it's correct before creating the explanation.
 
-Create 3-5 quiz questions in ${languageName}. Each question should:
+Create a minimum of 12 quiz questions in ${languageName}. Use VERY SIMPLE words that a 5-year-old can understand. Each question should:
 1. Be appropriate for grade ${grade} level
-2. Test understanding of the concept
-3. Have 4 multiple choice options
-4. Include a SHORT, step-by-step explanation like you're writing on a board
-5. The explanation MUST show the CORRECT solving process with CORRECT math
+2. Use simple, easy words (like "add" instead of "addition", "take away" instead of "subtract")
+3. Test understanding of the concept
+4. Have 4 multiple choice options (use simple words in options too)
+5. Include a SHORT, step-by-step explanation like you're writing on a board
+6. The explanation MUST show the CORRECT solving process with CORRECT math
+7. Use words like "plus" instead of "addition", "times" instead of "multiplication", "take away" instead of "subtraction"
 
 CRITICAL: For the explanation, you MUST use this EXACT format - NO DEVIATIONS:
 
@@ -158,25 +160,14 @@ CRITICAL MATH RULES:
 - ALWAYS calculate the answer yourself FIRST and verify it's correct
 - Double-check EVERY step before writing it
 
-Return a JSON array with this exact format:
-[
-  {
-    "question": "Question text in ${languageName}",
-    "options": ["option1", "option2", "option3", "option4"],
-    "correctAnswer": 0,
-    "explanation": "MUST follow this exact format: Start with 'Let me solve this:', show problem stacked, solve step-by-step showing updated answer after each step. Use format: 'First, [column]: [calculation]' then show updated problem. Keep it SHORT - just math steps.",
-    "difficulty": "easy"
-  }
-]
-
-Only return the JSON array, no other text.`
+Return a JSON object with a single key "questions" containing an array of question objects. Each object: "question", "options" (array of 4 strings), "correctAnswer" (0-3), "explanation" (short step-by-step), "difficulty" ("easy"/"medium"). Example: {"questions":[{"question":"...","options":["a","b","c","d"],"correctAnswer":0,"explanation":"Let me solve this:...","difficulty":"easy"}]}. Only return this JSON object, no other text.`
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
         {
           role: 'system',
-          content: `You are a math teacher writing on a whiteboard. CRITICAL RULES:
+          content: `You are a math teacher writing on a whiteboard. Be concise to keep responses fast. CRITICAL RULES:
 1. ALWAYS calculate the answer yourself FIRST and verify it's correct
 2. For subtraction with borrowing: After borrowing, the number you borrowed FROM decreases by 1
    Example: 4.6 - 1.9, after borrowing from 4, it becomes 3, so 3 - 1 = 2 (NOT 4 - 2)
@@ -192,7 +183,8 @@ Only return the JSON array, no other text.`
         },
       ],
       temperature: 0.3,
-      max_tokens: 2000,
+      max_tokens: 3500,
+      response_format: { type: 'json_object' },
     })
 
     const content = completion.choices[0]?.message?.content
@@ -200,16 +192,13 @@ Only return the JSON array, no other text.`
       throw new Error('No response from OpenAI')
     }
 
-    // Parse JSON response
+    // Parse JSON response (response_format: json_object ensures valid object)
     let questions
     try {
-      // Remove any markdown code blocks if present
       const cleanedContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
       const parsed = JSON.parse(cleanedContent)
-      questions = parsed.questions || parsed // Handle both {questions: []} and [] formats
-      if (!Array.isArray(questions)) {
-        throw new Error('Questions must be an array')
-      }
+      questions = Array.isArray(parsed.questions) ? parsed.questions : Array.isArray(parsed) ? parsed : []
+      if (questions.length === 0) throw new Error('Questions array empty')
     } catch (parseError) {
       console.error('Failed to parse OpenAI response:', content)
       throw new Error('Invalid JSON response from AI')
@@ -282,7 +271,7 @@ Only return the JSON array, no other text.`
     })
 
     // Format questions with IDs
-    const formattedQuestions = validatedQuestions.map((q: any, index: number) => ({
+    let formattedQuestions = validatedQuestions.map((q: any, index: number) => ({
       id: `${lessonId}-${index + 1}`,
       question: q.question,
       options: q.options,
@@ -290,6 +279,46 @@ Only return the JSON array, no other text.`
       explanation: q.explanation,
       difficulty: q.difficulty || 'medium',
     }))
+
+    // Ensure we have at least 12 questions - generate more if needed
+    if (formattedQuestions.length < 12) {
+      const additionalNeeded = 12 - formattedQuestions.length
+      const additionalPrompt = `Generate ${additionalNeeded} more quiz questions for the same lesson: ${lessonContext}. Same rules: simple words, 4 options, short step-by-step explanation. Return a JSON object with key "questions" containing the array. Only JSON, no other text.`
+
+      try {
+        const additionalCompletion = await openai.chat.completions.create({
+          model: 'gpt-4o-mini',
+          messages: [
+            { role: 'system', content: 'You are a math teacher. Respond with valid JSON only: {"questions":[...]}.' },
+            { role: 'user', content: additionalPrompt },
+          ],
+          temperature: 0.3,
+          max_tokens: 2500,
+          response_format: { type: 'json_object' },
+        })
+
+        const additionalContent = additionalCompletion.choices[0]?.message?.content
+        if (additionalContent) {
+          const cleanedAdditional = additionalContent.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
+          const parsedAdditional = JSON.parse(cleanedAdditional)
+          const additionalQuestions = Array.isArray(parsedAdditional?.questions) ? parsedAdditional.questions : Array.isArray(parsedAdditional) ? parsedAdditional : []
+          if (additionalQuestions.length > 0) {
+            const additionalFormatted = additionalQuestions.map((q: any, index: number) => ({
+              id: `${lessonId}-${formattedQuestions.length + index + 1}`,
+              question: q.question,
+              options: q.options,
+              correctAnswer: q.correctAnswer,
+              explanation: q.explanation,
+              difficulty: q.difficulty || 'medium',
+            }))
+            formattedQuestions = [...formattedQuestions, ...additionalFormatted]
+          }
+        }
+      } catch (error) {
+        console.error('Error generating additional questions:', error)
+        // Continue with what we have
+      }
+    }
 
     return NextResponse.json({ questions: formattedQuestions })
   } catch (error: any) {

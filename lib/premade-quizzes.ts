@@ -183,9 +183,10 @@ Write 1:
       difficulty: 'hard',
     },
   ],
-  'multiplication-intro': [
+  // Grade 3 - First Lesson: What is Multiplication?
+  'multiply-intro': [
     {
-      id: 'multiplication-intro-1',
+      id: 'multiply-intro-1',
       question: 'What is 5 × 4?',
       options: ['18', '20', '22', '16'],
       correctAnswer: 1,
@@ -203,7 +204,7 @@ Write 20:
       difficulty: 'easy',
     },
     {
-      id: 'multiplication-intro-2',
+      id: 'multiply-intro-2',
       question: 'What is 6 × 7?',
       options: ['40', '42', '44', '38'],
       correctAnswer: 1,
@@ -221,7 +222,7 @@ Write 42:
       difficulty: 'easy',
     },
     {
-      id: 'multiplication-intro-3',
+      id: 'multiply-intro-3',
       question: 'What is 8 × 9?',
       options: ['70', '72', '74', '68'],
       correctAnswer: 1,
@@ -239,7 +240,7 @@ Write 72:
       difficulty: 'medium',
     },
     {
-      id: 'multiplication-intro-4',
+      id: 'multiply-intro-4',
       question: 'What is 3 × 9?',
       options: ['24', '27', '30', '21'],
       correctAnswer: 1,
@@ -257,7 +258,7 @@ Write 27:
       difficulty: 'easy',
     },
     {
-      id: 'multiplication-intro-5',
+      id: 'multiply-intro-5',
       question: 'What is 7 × 6?',
       options: ['40', '42', '44', '38'],
       correctAnswer: 1,
@@ -273,6 +274,240 @@ Write 42:
 ----
  42`,
       difficulty: 'easy',
+    },
+    {
+      id: 'multiply-intro-6',
+      question: 'What is 4 × 5?',
+      options: ['18', '20', '22', '16'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+  4
+× 5
+----
+
+5 times 4 is 20
+Write 20:
+  4
+× 5
+----
+ 20`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'multiply-intro-7',
+      question: 'What is 2 × 8?',
+      options: ['14', '16', '18', '20'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+  2
+× 8
+----
+
+8 times 2 is 16
+Write 16:
+  2
+× 8
+----
+ 16`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'multiply-intro-8',
+      question: 'What is 9 × 3?',
+      options: ['24', '27', '30', '21'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+  9
+× 3
+----
+
+3 times 9 is 27
+Write 27:
+  9
+× 3
+----
+ 27`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'multiply-intro-9',
+      question: 'What is 5 × 6?',
+      options: ['28', '30', '32', '34'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+  5
+× 6
+----
+
+6 times 5 is 30
+Write 30:
+  5
+× 6
+----
+ 30`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'multiply-intro-10',
+      question: 'What is 7 × 4?',
+      options: ['26', '28', '30', '32'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+  7
+× 4
+----
+
+4 times 7 is 28
+Write 28:
+  7
+× 4
+----
+ 28`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'multiply-intro-11',
+      question: 'What is 6 × 5?',
+      options: ['28', '30', '32', '34'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+  6
+× 5
+----
+
+5 times 6 is 30
+Write 30:
+  6
+× 5
+----
+ 30`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'multiply-intro-12',
+      question: 'What is 8 × 4?',
+      options: ['30', '32', '34', '36'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+  8
+× 4
+----
+
+4 times 8 is 32
+Write 32:
+  8
+× 4
+----
+ 32`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'multiply-intro-13',
+      question: 'What is 9 × 5?',
+      options: ['42', '44', '45', '46'],
+      correctAnswer: 2,
+      explanation: `Let me solve this:
+  9
+× 5
+----
+
+5 times 9 is 45
+Write 45:
+  9
+× 5
+----
+ 45`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'multiply-intro-14',
+      question: 'What is 7 × 8?',
+      options: ['54', '56', '58', '60'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+  7
+× 8
+----
+
+8 times 7 is 56
+Write 56:
+  7
+× 8
+----
+ 56`,
+      difficulty: 'medium',
+    },
+    {
+      id: 'multiply-intro-15',
+      question: 'What is 4 × 7?',
+      options: ['26', '28', '30', '32'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+  4
+× 7
+----
+
+7 times 4 is 28
+Write 28:
+  4
+× 7
+----
+ 28`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'multiply-intro-16',
+      question: 'What is 6 × 8?',
+      options: ['46', '48', '50', '52'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+  6
+× 8
+----
+
+8 times 6 is 48
+Write 48:
+  6
+× 8
+----
+ 48`,
+      difficulty: 'medium',
+    },
+    {
+      id: 'multiply-intro-17',
+      question: 'What is 9 × 6?',
+      options: ['52', '54', '56', '58'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+  9
+× 6
+----
+
+6 times 9 is 54
+Write 54:
+  9
+× 6
+----
+ 54`,
+      difficulty: 'medium',
+    },
+    {
+      id: 'multiply-intro-18',
+      question: 'What is 8 × 7?',
+      options: ['54', '56', '58', '60'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+  8
+× 7
+----
+
+7 times 8 is 56
+Write 56:
+  8
+× 7
+----
+ 56`,
+      difficulty: 'medium',
     },
   ],
   'multiplication-tables': [
@@ -761,6 +996,247 @@ Bananas: 7
 
 7 > 5 > 3, so bananas is the most`,
       difficulty: 'easy',
+    },
+  ],
+  // Grade 4 - First Lesson: What is Place Value?
+  'place-value-intro': [
+    {
+      id: 'place-value-intro-1',
+      question: 'What is the value of the 5 in 456?',
+      options: ['5 ones', '5 tens', '5 hundreds', '5 thousands'],
+      correctAnswer: 1,
+      explanation: `In 456:
+- 4 is in the hundreds place
+- 5 is in the tens place
+- 6 is in the ones place
+
+So 5 represents 5 tens (50)`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'place-value-intro-2',
+      question: 'What is the value of the 3 in 3,245?',
+      options: ['3 ones', '3 tens', '3 hundreds', '3 thousands'],
+      correctAnswer: 3,
+      explanation: `In 3,245:
+- 3 is in the thousands place
+- 2 is in the hundreds place
+- 4 is in the tens place
+- 5 is in the ones place
+
+So 3 represents 3 thousands (3,000)`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'place-value-intro-3',
+      question: 'What is 234 in expanded form?',
+      options: ['200 + 30 + 4', '2 + 3 + 4', '200 + 3 + 4', '20 + 30 + 4'],
+      correctAnswer: 0,
+      explanation: `234 in expanded form:
+- 2 hundreds = 200
+- 3 tens = 30
+- 4 ones = 4
+
+So 234 = 200 + 30 + 4`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'place-value-intro-4',
+      question: 'What is 1,567 in expanded form?',
+      options: ['1000 + 500 + 60 + 7', '1 + 5 + 6 + 7', '1000 + 5 + 6 + 7', '10 + 50 + 60 + 7'],
+      correctAnswer: 0,
+      explanation: `1,567 in expanded form:
+- 1 thousand = 1000
+- 5 hundreds = 500
+- 6 tens = 60
+- 7 ones = 7
+
+So 1,567 = 1000 + 500 + 60 + 7`,
+      difficulty: 'medium',
+    },
+    {
+      id: 'place-value-intro-5',
+      question: 'What number has 4 thousands, 2 hundreds, 3 tens, and 5 ones?',
+      options: ['4,235', '4,253', '4,325', '4,352'],
+      correctAnswer: 0,
+      explanation: `4 thousands = 4,000
+2 hundreds = 200
+3 tens = 30
+5 ones = 5
+
+4,000 + 200 + 30 + 5 = 4,235`,
+      difficulty: 'medium',
+    },
+    {
+      id: 'place-value-intro-6',
+      question: 'What is the value of the 7 in 7,891?',
+      options: ['7 ones', '7 tens', '7 hundreds', '7 thousands'],
+      correctAnswer: 3,
+      explanation: `In 7,891:
+- 7 is in the thousands place
+- 8 is in the hundreds place
+- 9 is in the tens place
+- 1 is in the ones place
+
+So 7 represents 7 thousands (7,000)`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'place-value-intro-7',
+      question: 'What is 5,432 in words?',
+      options: ['Five thousand four hundred thirty-two', 'Five hundred four thousand thirty-two', 'Fifty-four thousand thirty-two', 'Five thousand four hundred two'],
+      correctAnswer: 0,
+      explanation: `5,432 = 5 thousands, 4 hundreds, 3 tens, 2 ones
+
+In words: Five thousand four hundred thirty-two`,
+      difficulty: 'medium',
+    },
+    {
+      id: 'place-value-intro-8',
+      question: 'What is the value of the 9 in 9,876?',
+      options: ['9 ones', '9 tens', '9 hundreds', '9 thousands'],
+      correctAnswer: 3,
+      explanation: `In 9,876:
+- 9 is in the thousands place
+- 8 is in the hundreds place
+- 7 is in the tens place
+- 6 is in the ones place
+
+So 9 represents 9 thousands (9,000)`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'place-value-intro-9',
+      question: 'What is 3,456 in expanded form?',
+      options: ['3000 + 400 + 50 + 6', '3 + 4 + 5 + 6', '3000 + 4 + 5 + 6', '30 + 40 + 50 + 6'],
+      correctAnswer: 0,
+      explanation: `3,456 in expanded form:
+- 3 thousands = 3000
+- 4 hundreds = 400
+- 5 tens = 50
+- 6 ones = 6
+
+So 3,456 = 3000 + 400 + 50 + 6`,
+      difficulty: 'medium',
+    },
+    {
+      id: 'place-value-intro-10',
+      question: 'What number has 6 thousands, 0 hundreds, 4 tens, and 8 ones?',
+      options: ['6,048', '6,408', '6,084', '6,840'],
+      correctAnswer: 0,
+      explanation: `6 thousands = 6,000
+0 hundreds = 0
+4 tens = 40
+8 ones = 8
+
+6,000 + 0 + 40 + 8 = 6,048`,
+      difficulty: 'medium',
+    },
+    {
+      id: 'place-value-intro-11',
+      question: 'What is the value of the 2 in 2,345?',
+      options: ['2 ones', '2 tens', '2 hundreds', '2 thousands'],
+      correctAnswer: 3,
+      explanation: `In 2,345:
+- 2 is in the thousands place
+- 3 is in the hundreds place
+- 4 is in the tens place
+- 5 is in the ones place
+
+So 2 represents 2 thousands (2,000)`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'place-value-intro-12',
+      question: 'What is 8,901 in expanded form?',
+      options: ['8000 + 900 + 0 + 1', '8 + 9 + 0 + 1', '8000 + 9 + 0 + 1', '80 + 90 + 0 + 1'],
+      correctAnswer: 0,
+      explanation: `8,901 in expanded form:
+- 8 thousands = 8000
+- 9 hundreds = 900
+- 0 tens = 0
+- 1 one = 1
+
+So 8,901 = 8000 + 900 + 0 + 1`,
+      difficulty: 'medium',
+    },
+    {
+      id: 'place-value-intro-13',
+      question: 'What is the value of the 4 in 4,567?',
+      options: ['4 ones', '4 tens', '4 hundreds', '4 thousands'],
+      correctAnswer: 3,
+      explanation: `In 4,567:
+- 4 is in the thousands place
+- 5 is in the hundreds place
+- 6 is in the tens place
+- 7 is in the ones place
+
+So 4 represents 4 thousands (4,000)`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'place-value-intro-14',
+      question: 'What number has 7 thousands, 3 hundreds, 2 tens, and 9 ones?',
+      options: ['7,329', '7,392', '7,239', '7,293'],
+      correctAnswer: 0,
+      explanation: `7 thousands = 7,000
+3 hundreds = 300
+2 tens = 20
+9 ones = 9
+
+7,000 + 300 + 20 + 9 = 7,329`,
+      difficulty: 'medium',
+    },
+    {
+      id: 'place-value-intro-15',
+      question: 'What is 9,999 in expanded form?',
+      options: ['9000 + 900 + 90 + 9', '9 + 9 + 9 + 9', '9000 + 9 + 9 + 9', '90 + 90 + 90 + 9'],
+      correctAnswer: 0,
+      explanation: `9,999 in expanded form:
+- 9 thousands = 9000
+- 9 hundreds = 900
+- 9 tens = 90
+- 9 ones = 9
+
+So 9,999 = 9000 + 900 + 90 + 9`,
+      difficulty: 'medium',
+    },
+    {
+      id: 'place-value-intro-16',
+      question: 'What is the value of the 1 in 1,234?',
+      options: ['1 one', '1 ten', '1 hundred', '1 thousand'],
+      correctAnswer: 3,
+      explanation: `In 1,234:
+- 1 is in the thousands place
+- 2 is in the hundreds place
+- 3 is in the tens place
+- 4 is in the ones place
+
+So 1 represents 1 thousand (1,000)`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'place-value-intro-17',
+      question: 'What is 6,789 in words?',
+      options: ['Six thousand seven hundred eighty-nine', 'Six hundred seven thousand eighty-nine', 'Sixty-seven thousand eighty-nine', 'Six thousand seven hundred nine'],
+      correctAnswer: 0,
+      explanation: `6,789 = 6 thousands, 7 hundreds, 8 tens, 9 ones
+
+In words: Six thousand seven hundred eighty-nine`,
+      difficulty: 'medium',
+    },
+    {
+      id: 'place-value-intro-18',
+      question: 'What number has 2 thousands, 5 hundreds, 0 tens, and 7 ones?',
+      options: ['2,507', '2,570', '2,057', '2,705'],
+      correctAnswer: 0,
+      explanation: `2 thousands = 2,000
+5 hundreds = 500
+0 tens = 0
+7 ones = 7
+
+2,000 + 500 + 0 + 7 = 2,507`,
+      difficulty: 'medium',
     },
   ],
   // Grade 4 - Arithmetic
@@ -1325,7 +1801,7 @@ So -4 × 3 = -12`,
       difficulty: 'medium',
     },
   ],
-  // Grade 6 - Ratios
+  // Grade 6 - First Lesson: Introduction to Ratios
   'ratios-intro': [
     {
       id: 'ratios-intro-1',
@@ -1337,6 +1813,210 @@ So -4 × 3 = -12`,
 
 Ratio of apples to oranges = 3:2
 This means 3 apples for every 2 oranges`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'ratios-intro-2',
+      question: 'If there are 4 dogs and 6 cats, what is the ratio of dogs to cats?',
+      options: ['4:6', '6:4', '4:10', '10:4'],
+      correctAnswer: 0,
+      explanation: `Let me solve this:
+4 dogs and 6 cats
+
+Ratio of dogs to cats = 4:6
+This means 4 dogs for every 6 cats`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'ratios-intro-3',
+      question: 'If there are 5 red balls and 3 blue balls, what is the ratio of red to blue?',
+      options: ['5:3', '3:5', '5:8', '8:5'],
+      correctAnswer: 0,
+      explanation: `Let me solve this:
+5 red balls and 3 blue balls
+
+Ratio of red to blue = 5:3
+This means 5 red balls for every 3 blue balls`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'ratios-intro-4',
+      question: 'If there are 2 boys and 4 girls, what is the ratio of boys to girls?',
+      options: ['2:4', '4:2', '2:6', '6:2'],
+      correctAnswer: 0,
+      explanation: `Let me solve this:
+2 boys and 4 girls
+
+Ratio of boys to girls = 2:4
+This means 2 boys for every 4 girls`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'ratios-intro-5',
+      question: 'If there are 6 pencils and 2 pens, what is the ratio of pencils to pens?',
+      options: ['6:2', '2:6', '6:8', '8:6'],
+      correctAnswer: 0,
+      explanation: `Let me solve this:
+6 pencils and 2 pens
+
+Ratio of pencils to pens = 6:2
+This means 6 pencils for every 2 pens`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'ratios-intro-6',
+      question: 'If there are 8 cookies and 4 cupcakes, what is the ratio of cookies to cupcakes?',
+      options: ['8:4', '4:8', '8:12', '12:8'],
+      correctAnswer: 0,
+      explanation: `Let me solve this:
+8 cookies and 4 cupcakes
+
+Ratio of cookies to cupcakes = 8:4
+This means 8 cookies for every 4 cupcakes`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'ratios-intro-7',
+      question: 'If there are 10 cars and 5 bikes, what is the ratio of cars to bikes?',
+      options: ['10:5', '5:10', '10:15', '15:10'],
+      correctAnswer: 0,
+      explanation: `Let me solve this:
+10 cars and 5 bikes
+
+Ratio of cars to bikes = 10:5
+This means 10 cars for every 5 bikes`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'ratios-intro-8',
+      question: 'If there are 3 squares and 9 circles, what is the ratio of squares to circles?',
+      options: ['3:9', '9:3', '3:12', '12:3'],
+      correctAnswer: 0,
+      explanation: `Let me solve this:
+3 squares and 9 circles
+
+Ratio of squares to circles = 3:9
+This means 3 squares for every 9 circles`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'ratios-intro-9',
+      question: 'If there are 7 red flowers and 3 yellow flowers, what is the ratio of red to yellow?',
+      options: ['7:3', '3:7', '7:10', '10:7'],
+      correctAnswer: 0,
+      explanation: `Let me solve this:
+7 red flowers and 3 yellow flowers
+
+Ratio of red to yellow = 7:3
+This means 7 red flowers for every 3 yellow flowers`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'ratios-intro-10',
+      question: 'If there are 12 students and 3 teachers, what is the ratio of students to teachers?',
+      options: ['12:3', '3:12', '12:15', '15:12'],
+      correctAnswer: 0,
+      explanation: `Let me solve this:
+12 students and 3 teachers
+
+Ratio of students to teachers = 12:3
+This means 12 students for every 3 teachers`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'ratios-intro-11',
+      question: 'If there are 4 books and 8 notebooks, what is the ratio of books to notebooks?',
+      options: ['4:8', '8:4', '4:12', '12:4'],
+      correctAnswer: 0,
+      explanation: `Let me solve this:
+4 books and 8 notebooks
+
+Ratio of books to notebooks = 4:8
+This means 4 books for every 8 notebooks`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'ratios-intro-12',
+      question: 'If there are 9 stars and 3 moons, what is the ratio of stars to moons?',
+      options: ['9:3', '3:9', '9:12', '12:9'],
+      correctAnswer: 0,
+      explanation: `Let me solve this:
+9 stars and 3 moons
+
+Ratio of stars to moons = 9:3
+This means 9 stars for every 3 moons`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'ratios-intro-13',
+      question: 'If there are 6 triangles and 2 rectangles, what is the ratio of triangles to rectangles?',
+      options: ['6:2', '2:6', '6:8', '8:6'],
+      correctAnswer: 0,
+      explanation: `Let me solve this:
+6 triangles and 2 rectangles
+
+Ratio of triangles to rectangles = 6:2
+This means 6 triangles for every 2 rectangles`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'ratios-intro-14',
+      question: 'If there are 15 birds and 5 nests, what is the ratio of birds to nests?',
+      options: ['15:5', '5:15', '15:20', '20:15'],
+      correctAnswer: 0,
+      explanation: `Let me solve this:
+15 birds and 5 nests
+
+Ratio of birds to nests = 15:5
+This means 15 birds for every 5 nests`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'ratios-intro-15',
+      question: 'If there are 20 candies and 4 bags, what is the ratio of candies to bags?',
+      options: ['20:4', '4:20', '20:24', '24:20'],
+      correctAnswer: 0,
+      explanation: `Let me solve this:
+20 candies and 4 bags
+
+Ratio of candies to bags = 20:4
+This means 20 candies for every 4 bags`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'ratios-intro-16',
+      question: 'If there are 8 fish and 2 tanks, what is the ratio of fish to tanks?',
+      options: ['8:2', '2:8', '8:10', '10:8'],
+      correctAnswer: 0,
+      explanation: `Let me solve this:
+8 fish and 2 tanks
+
+Ratio of fish to tanks = 8:2
+This means 8 fish for every 2 tanks`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'ratios-intro-17',
+      question: 'If there are 14 flowers and 7 vases, what is the ratio of flowers to vases?',
+      options: ['14:7', '7:14', '14:21', '21:14'],
+      correctAnswer: 0,
+      explanation: `Let me solve this:
+14 flowers and 7 vases
+
+Ratio of flowers to vases = 14:7
+This means 14 flowers for every 7 vases`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'ratios-intro-18',
+      question: 'If there are 18 toys and 6 boxes, what is the ratio of toys to boxes?',
+      options: ['18:6', '6:18', '18:24', '24:18'],
+      correctAnswer: 0,
+      explanation: `Let me solve this:
+18 toys and 6 boxes
+
+Ratio of toys to boxes = 18:6
+This means 18 toys for every 6 boxes`,
       difficulty: 'easy',
     },
   ],
@@ -1440,6 +2120,262 @@ Area = 3.14 × 9 = 28.26
 
 So the area is 28.26 square units`,
       difficulty: 'medium',
+    },
+  ],
+  // Grade 7 - First Lesson: Introduction to Proportional Relationships
+  'proportional-relationships-intro': [
+    {
+      id: 'proportional-relationships-intro-1',
+      question: 'If 2 apples cost $4, how much do 4 apples cost?',
+      options: ['$6', '$8', '$10', '$12'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+2 apples cost $4
+So 1 apple costs $4 ÷ 2 = $2
+
+4 apples cost 4 × $2 = $8
+
+This is proportional because when apples double, cost doubles`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'proportional-relationships-intro-2',
+      question: 'If 3 cookies cost $6, how much do 6 cookies cost?',
+      options: ['$10', '$12', '$14', '$16'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+3 cookies cost $6
+So 1 cookie costs $6 ÷ 3 = $2
+
+6 cookies cost 6 × $2 = $12
+
+This is proportional because when cookies double, cost doubles`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'proportional-relationships-intro-3',
+      question: 'If 4 pencils cost $8, how much do 8 pencils cost?',
+      options: ['$14', '$16', '$18', '$20'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+4 pencils cost $8
+So 1 pencil costs $8 ÷ 4 = $2
+
+8 pencils cost 8 × $2 = $16
+
+This is proportional because when pencils double, cost doubles`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'proportional-relationships-intro-4',
+      question: 'If 5 books cost $15, how much do 10 books cost?',
+      options: ['$25', '$30', '$35', '$40'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+5 books cost $15
+So 1 book costs $15 ÷ 5 = $3
+
+10 books cost 10 × $3 = $30
+
+This is proportional because when books double, cost doubles`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'proportional-relationships-intro-5',
+      question: 'If 2 hours = 120 minutes, how many minutes in 4 hours?',
+      options: ['220', '240', '260', '280'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+2 hours = 120 minutes
+So 1 hour = 120 ÷ 2 = 60 minutes
+
+4 hours = 4 × 60 = 240 minutes
+
+This is proportional because when hours double, minutes double`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'proportional-relationships-intro-6',
+      question: 'If 3 miles = 15 minutes, how many minutes for 6 miles?',
+      options: ['28', '30', '32', '34'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+3 miles = 15 minutes
+So 1 mile = 15 ÷ 3 = 5 minutes
+
+6 miles = 6 × 5 = 30 minutes
+
+This is proportional because when miles double, minutes double`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'proportional-relationships-intro-7',
+      question: 'If 4 cups of flour make 8 cookies, how many cookies from 8 cups?',
+      options: ['14', '16', '18', '20'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+4 cups make 8 cookies
+So 1 cup makes 8 ÷ 4 = 2 cookies
+
+8 cups make 8 × 2 = 16 cookies
+
+This is proportional because when cups double, cookies double`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'proportional-relationships-intro-8',
+      question: 'If 2 boxes hold 12 toys, how many toys in 4 boxes?',
+      options: ['22', '24', '26', '28'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+2 boxes hold 12 toys
+So 1 box holds 12 ÷ 2 = 6 toys
+
+4 boxes hold 4 × 6 = 24 toys
+
+This is proportional because when boxes double, toys double`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'proportional-relationships-intro-9',
+      question: 'If 5 students need 10 pencils, how many pencils for 10 students?',
+      options: ['18', '20', '22', '24'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+5 students need 10 pencils
+So 1 student needs 10 ÷ 5 = 2 pencils
+
+10 students need 10 × 2 = 20 pencils
+
+This is proportional because when students double, pencils double`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'proportional-relationships-intro-10',
+      question: 'If 3 bags weigh 9 pounds, how much do 6 bags weigh?',
+      options: ['16', '18', '20', '22'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+3 bags weigh 9 pounds
+So 1 bag weighs 9 ÷ 3 = 3 pounds
+
+6 bags weigh 6 × 3 = 18 pounds
+
+This is proportional because when bags double, weight doubles`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'proportional-relationships-intro-11',
+      question: 'If 4 cars need 8 gallons of gas, how many gallons for 8 cars?',
+      options: ['14', '16', '18', '20'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+4 cars need 8 gallons
+So 1 car needs 8 ÷ 4 = 2 gallons
+
+8 cars need 8 × 2 = 16 gallons
+
+This is proportional because when cars double, gallons double`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'proportional-relationships-intro-12',
+      question: 'If 2 cakes need 6 eggs, how many eggs for 4 cakes?',
+      options: ['10', '12', '14', '16'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+2 cakes need 6 eggs
+So 1 cake needs 6 ÷ 2 = 3 eggs
+
+4 cakes need 4 × 3 = 12 eggs
+
+This is proportional because when cakes double, eggs double`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'proportional-relationships-intro-13',
+      question: 'If 5 flowers cost $10, how much do 10 flowers cost?',
+      options: ['$18', '$20', '$22', '$24'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+5 flowers cost $10
+So 1 flower costs $10 ÷ 5 = $2
+
+10 flowers cost 10 × $2 = $20
+
+This is proportional because when flowers double, cost doubles`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'proportional-relationships-intro-14',
+      question: 'If 3 days = 72 hours, how many hours in 6 days?',
+      options: ['140', '144', '148', '152'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+3 days = 72 hours
+So 1 day = 72 ÷ 3 = 24 hours
+
+6 days = 6 × 24 = 144 hours
+
+This is proportional because when days double, hours double`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'proportional-relationships-intro-15',
+      question: 'If 4 workers finish in 8 hours, how long for 8 workers?',
+      options: ['4 hours', '8 hours', '12 hours', '16 hours'],
+      correctAnswer: 0,
+      explanation: `Let me solve this:
+4 workers finish in 8 hours
+With more workers, it takes less time
+
+8 workers = 2 times more workers
+So time = 8 ÷ 2 = 4 hours
+
+This is proportional but inverse`,
+      difficulty: 'medium',
+    },
+    {
+      id: 'proportional-relationships-intro-16',
+      question: 'If 2 pizzas feed 8 people, how many people can 4 pizzas feed?',
+      options: ['14', '16', '18', '20'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+2 pizzas feed 8 people
+So 1 pizza feeds 8 ÷ 2 = 4 people
+
+4 pizzas feed 4 × 4 = 16 people
+
+This is proportional because when pizzas double, people double`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'proportional-relationships-intro-17',
+      question: 'If 6 oranges cost $12, how much do 12 oranges cost?',
+      options: ['$22', '$24', '$26', '$28'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+6 oranges cost $12
+So 1 orange costs $12 ÷ 6 = $2
+
+12 oranges cost 12 × $2 = $24
+
+This is proportional because when oranges double, cost doubles`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'proportional-relationships-intro-18',
+      question: 'If 3 minutes = 180 seconds, how many seconds in 6 minutes?',
+      options: ['340', '360', '380', '400'],
+      correctAnswer: 1,
+      explanation: `Let me solve this:
+3 minutes = 180 seconds
+So 1 minute = 180 ÷ 3 = 60 seconds
+
+6 minutes = 6 × 60 = 360 seconds
+
+This is proportional because when minutes double, seconds double`,
+      difficulty: 'easy',
     },
   ],
   // Grade 7 - Algebra
@@ -1574,6 +2510,255 @@ So the surface area is 54 square units`,
       difficulty: 'medium',
     },
   ],
+  // Grade 8 - First Lesson: Irrational Numbers
+  'irrational-numbers': [
+    {
+      id: 'irrational-numbers-1',
+      question: 'Which number is irrational?',
+      options: ['2', '3', '√2', '4'],
+      correctAnswer: 2,
+      explanation: `Irrational numbers cannot be written as fractions
+
+√2 = 1.41421356... (goes on forever, no pattern)
+This cannot be written as a fraction
+
+So √2 is irrational`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'irrational-numbers-2',
+      question: 'Which number is irrational?',
+      options: ['1/2', '0.5', '√3', '5'],
+      correctAnswer: 2,
+      explanation: `Irrational numbers cannot be written as fractions
+
+√3 = 1.7320508... (goes on forever, no pattern)
+This cannot be written as a fraction
+
+So √3 is irrational`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'irrational-numbers-3',
+      question: 'Which number is irrational?',
+      options: ['√4', '√5', '√9', '√16'],
+      correctAnswer: 1,
+      explanation: `Let me check each:
+√4 = 2 (rational - can write as 2/1)
+√5 = 2.236... (irrational - goes on forever)
+√9 = 3 (rational - can write as 3/1)
+√16 = 4 (rational - can write as 4/1)
+
+So √5 is irrational`,
+      difficulty: 'medium',
+    },
+    {
+      id: 'irrational-numbers-4',
+      question: 'Which number is irrational?',
+      options: ['π', '3.14', '22/7', '3'],
+      correctAnswer: 0,
+      explanation: `π (pi) = 3.14159265... (goes on forever, no pattern)
+This cannot be written as a fraction
+
+So π is irrational
+
+Note: 3.14 and 22/7 are approximations, not the real π`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'irrational-numbers-5',
+      question: 'Which number is NOT irrational?',
+      options: ['√2', '√7', '√8', '√25'],
+      correctAnswer: 3,
+      explanation: `Let me check each:
+√2 = 1.414... (irrational)
+√7 = 2.645... (irrational)
+√8 = 2.828... (irrational)
+√25 = 5 (rational - can write as 5/1)
+
+So √25 is NOT irrational`,
+      difficulty: 'medium',
+    },
+    {
+      id: 'irrational-numbers-6',
+      question: 'Which number is irrational?',
+      options: ['0.5', '1/3', '√10', '7'],
+      correctAnswer: 2,
+      explanation: `Irrational numbers cannot be written as fractions
+
+√10 = 3.1622776... (goes on forever, no pattern)
+This cannot be written as a fraction
+
+So √10 is irrational`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'irrational-numbers-7',
+      question: 'Which number is irrational?',
+      options: ['√1', '√6', '√36', '√49'],
+      correctAnswer: 1,
+      explanation: `Let me check each:
+√1 = 1 (rational)
+√6 = 2.449... (irrational - goes on forever)
+√36 = 6 (rational)
+√49 = 7 (rational)
+
+So √6 is irrational`,
+      difficulty: 'medium',
+    },
+    {
+      id: 'irrational-numbers-8',
+      question: 'Which number is irrational?',
+      options: ['2.5', '5/2', '√11', '10'],
+      correctAnswer: 2,
+      explanation: `Irrational numbers cannot be written as fractions
+
+√11 = 3.3166247... (goes on forever, no pattern)
+This cannot be written as a fraction
+
+So √11 is irrational`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'irrational-numbers-9',
+      question: 'Which number is NOT irrational?',
+      options: ['√3', '√12', '√13', '√16'],
+      correctAnswer: 3,
+      explanation: `Let me check each:
+√3 = 1.732... (irrational)
+√12 = 3.464... (irrational)
+√13 = 3.605... (irrational)
+√16 = 4 (rational - can write as 4/1)
+
+So √16 is NOT irrational`,
+      difficulty: 'medium',
+    },
+    {
+      id: 'irrational-numbers-10',
+      question: 'Which number is irrational?',
+      options: ['0.25', '1/4', '√17', '4'],
+      correctAnswer: 2,
+      explanation: `Irrational numbers cannot be written as fractions
+
+√17 = 4.1231056... (goes on forever, no pattern)
+This cannot be written as a fraction
+
+So √17 is irrational`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'irrational-numbers-11',
+      question: 'Which number is irrational?',
+      options: ['√18', '√25', '√64', '√81'],
+      correctAnswer: 0,
+      explanation: `Let me check each:
+√18 = 4.242... (irrational - goes on forever)
+√25 = 5 (rational)
+√64 = 8 (rational)
+√81 = 9 (rational)
+
+So √18 is irrational`,
+      difficulty: 'medium',
+    },
+    {
+      id: 'irrational-numbers-12',
+      question: 'Which number is irrational?',
+      options: ['3.14159', 'π', '22/7', '3.14'],
+      correctAnswer: 1,
+      explanation: `π (pi) is the real irrational number
+
+3.14159, 22/7, and 3.14 are just approximations
+The real π goes on forever with no pattern
+
+So π is irrational`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'irrational-numbers-13',
+      question: 'Which number is irrational?',
+      options: ['√19', '√20', '√21', 'All of them'],
+      correctAnswer: 3,
+      explanation: `Let me check each:
+√19 = 4.358... (irrational)
+√20 = 4.472... (irrational)
+√21 = 4.582... (irrational)
+
+None of these are perfect squares, so all are irrational
+
+So all of them are irrational`,
+      difficulty: 'medium',
+    },
+    {
+      id: 'irrational-numbers-14',
+      question: 'Which number is NOT irrational?',
+      options: ['√2', '√5', '√8', '√9'],
+      correctAnswer: 3,
+      explanation: `Let me check each:
+√2 = 1.414... (irrational)
+√5 = 2.236... (irrational)
+√8 = 2.828... (irrational)
+√9 = 3 (rational - can write as 3/1)
+
+So √9 is NOT irrational`,
+      difficulty: 'medium',
+    },
+    {
+      id: 'irrational-numbers-15',
+      question: 'Which number is irrational?',
+      options: ['0.333...', '1/3', '√22', '3'],
+      correctAnswer: 2,
+      explanation: `Irrational numbers cannot be written as fractions
+
+√22 = 4.6904157... (goes on forever, no pattern)
+This cannot be written as a fraction
+
+So √22 is irrational
+
+Note: 0.333... and 1/3 are the same (rational)`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'irrational-numbers-16',
+      question: 'Which number is irrational?',
+      options: ['√23', '√24', '√25', 'Both √23 and √24'],
+      correctAnswer: 3,
+      explanation: `Let me check each:
+√23 = 4.795... (irrational)
+√24 = 4.898... (irrational)
+√25 = 5 (rational)
+
+So both √23 and √24 are irrational`,
+      difficulty: 'medium',
+    },
+    {
+      id: 'irrational-numbers-17',
+      question: 'Which number is irrational?',
+      options: ['√26', '√27', '√28', 'All of them'],
+      correctAnswer: 3,
+      explanation: `Let me check each:
+√26 = 5.099... (irrational)
+√27 = 5.196... (irrational)
+√28 = 5.291... (irrational)
+
+None of these are perfect squares, so all are irrational
+
+So all of them are irrational`,
+      difficulty: 'medium',
+    },
+    {
+      id: 'irrational-numbers-18',
+      question: 'Which number is irrational?',
+      options: ['2.5', '5/2', '√29', '10'],
+      correctAnswer: 2,
+      explanation: `Irrational numbers cannot be written as fractions
+
+√29 = 5.3851648... (goes on forever, no pattern)
+This cannot be written as a fraction
+
+So √29 is irrational`,
+      difficulty: 'easy',
+    },
+  ],
   // Grade 8 - Algebra
   'multi-step-equations': [
     {
@@ -1682,7 +2867,7 @@ Similar triangles have proportional sides`,
       difficulty: 'medium',
     },
   ],
-  // Grade 5 - Unit 1: Decimal Place Value
+  // Grade 5 - First Lesson: Introduction to Decimals
   'decimal-place-value-intro': [
     {
       id: 'decimal-place-value-intro-1',
@@ -1741,6 +2926,157 @@ They are equal`,
 3 tenths = 0.3
 
 So 3/10 = 0.3`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'decimal-place-value-intro-6',
+      question: 'What is the value of the 8 in 4.8?',
+      options: ['8 ones', '8 tenths', '8 hundredths', '8 thousandths'],
+      correctAnswer: 1,
+      explanation: `In 4.8:
+- 4 is in the ones place
+- 8 is in the tenths place
+
+So 8 represents 8 tenths`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'decimal-place-value-intro-7',
+      question: 'What is 0.9 as a fraction?',
+      options: ['9/10', '9/100', '1/9', '9'],
+      correctAnswer: 0,
+      explanation: `0.9 means 9 tenths
+
+9 tenths = 9/10
+
+So 0.9 = 9/10`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'decimal-place-value-intro-8',
+      question: 'What is 5.6 in words?',
+      options: ['Five and six tenths', 'Five and six hundredths', 'Fifty-six', 'Five point six'],
+      correctAnswer: 0,
+      explanation: `5.6 = 5 ones and 6 tenths
+
+In words: Five and six tenths`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'decimal-place-value-intro-9',
+      question: 'What is the decimal for 7/10?',
+      options: ['0.7', '0.07', '7.0', '0.77'],
+      correctAnswer: 0,
+      explanation: `7/10 means 7 tenths
+
+7 tenths = 0.7
+
+So 7/10 = 0.7`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'decimal-place-value-intro-10',
+      question: 'What is the value of the 2 in 1.2?',
+      options: ['2 ones', '2 tenths', '2 hundredths', '2 thousandths'],
+      correctAnswer: 1,
+      explanation: `In 1.2:
+- 1 is in the ones place
+- 2 is in the tenths place
+
+So 2 represents 2 tenths`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'decimal-place-value-intro-11',
+      question: 'What is 0.4 as a fraction?',
+      options: ['4/10', '4/100', '1/4', '4'],
+      correctAnswer: 0,
+      explanation: `0.4 means 4 tenths
+
+4 tenths = 4/10
+
+So 0.4 = 4/10`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'decimal-place-value-intro-12',
+      question: 'What is 6.5 in words?',
+      options: ['Six and five tenths', 'Six and five hundredths', 'Sixty-five', 'Six point five'],
+      correctAnswer: 0,
+      explanation: `6.5 = 6 ones and 5 tenths
+
+In words: Six and five tenths`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'decimal-place-value-intro-13',
+      question: 'What is the decimal for 9/10?',
+      options: ['0.9', '0.09', '9.0', '0.99'],
+      correctAnswer: 0,
+      explanation: `9/10 means 9 tenths
+
+9 tenths = 0.9
+
+So 9/10 = 0.9`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'decimal-place-value-intro-14',
+      question: 'What is the value of the 1 in 8.1?',
+      options: ['1 one', '1 ten', '1 tenth', '1 hundredth'],
+      correctAnswer: 2,
+      explanation: `In 8.1:
+- 8 is in the ones place
+- 1 is in the tenths place
+
+So 1 represents 1 tenth`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'decimal-place-value-intro-15',
+      question: 'What is 0.6 as a fraction?',
+      options: ['6/10', '6/100', '1/6', '6'],
+      correctAnswer: 0,
+      explanation: `0.6 means 6 tenths
+
+6 tenths = 6/10
+
+So 0.6 = 6/10`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'decimal-place-value-intro-16',
+      question: 'What is 3.7 in words?',
+      options: ['Three and seven tenths', 'Three and seven hundredths', 'Thirty-seven', 'Three point seven'],
+      correctAnswer: 0,
+      explanation: `3.7 = 3 ones and 7 tenths
+
+In words: Three and seven tenths`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'decimal-place-value-intro-17',
+      question: 'What is the decimal for 1/10?',
+      options: ['0.1', '0.01', '1.0', '0.11'],
+      correctAnswer: 0,
+      explanation: `1/10 means 1 tenth
+
+1 tenth = 0.1
+
+So 1/10 = 0.1`,
+      difficulty: 'easy',
+    },
+    {
+      id: 'decimal-place-value-intro-18',
+      question: 'Which decimal is greater: 0.3 or 0.8?',
+      options: ['0.3', '0.8', 'They are equal', 'Cannot tell'],
+      correctAnswer: 1,
+      explanation: `Compare 0.3 and 0.8
+
+0.3 = 3/10
+0.8 = 8/10
+
+8/10 > 3/10, so 0.8 > 0.3`,
       difficulty: 'easy',
     },
   ],
@@ -3565,7 +4901,34 @@ So y = 2x`,
   ],
 }
 
-// Get premade quiz for a lesson, or return empty array if none exists
+// Grade 4: first lesson of each unit uses a premade quiz. Map first-lesson IDs to existing premade keys.
+const GRADE4_FIRST_LESSON_QUIZ_ALIASES: Record<string, string> = {
+  'place-value-intro': 'place-value-intro', // already in premadeQuizzes
+  'add-subtract-review': 'add-subtract-3',
+  'multiply-review': 'multiply-intro',
+  'multiply-2-digit-intro': 'multi-digit-multiply',
+  'division-review': 'division-intro',
+  'factors-intro': 'factors-multiples',
+  'equivalent-fractions-intro': 'equivalent-fractions',
+  'add-fractions-like': 'adding-fractions',
+}
+
+const MIN_QUIZ_QUESTIONS = 12
+
+// Get premade quiz for a lesson, or return empty array if none exists.
+// For Grade 4 first-lesson IDs, aliases to the correct premade quiz and rewrites question IDs to match lessonId.
 export function getPremadeQuiz(lessonId: string): QuizQuestion[] {
-  return premadeQuizzes[lessonId] || []
+  const key = GRADE4_FIRST_LESSON_QUIZ_ALIASES[lessonId] ?? lessonId
+  const questions = premadeQuizzes[key]
+  if (!questions || questions.length === 0) return []
+  // Rewrite IDs so progress is saved under the actual lessonId (e.g. add-subtract-review-1, add-subtract-review-2)
+  const baseId = lessonId
+  return questions.map((q, i) => ({
+    ...q,
+    id: `${baseId}-${i + 1}`,
+  }))
+}
+
+export function getMinQuizQuestions(): number {
+  return MIN_QUIZ_QUESTIONS
 }

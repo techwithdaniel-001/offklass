@@ -66,9 +66,45 @@ export default function VideoPlayer({
 
   const t = useCallback((key: string) => getTranslation(language, key), [language])
 
-  // Use demo video for ALL lessons (user requested)
-  const demoVideoUrl = '/assets/demo.mp4'
-  const actualVideoUrl = demoVideoUrl
+  // Resolve curriculum videos: files are named 1-Title.mp4, 2-Title.mp4 — use part after dash as title
+  const [resolvedVideoUrl, setResolvedVideoUrl] = useState<string | null>(null)
+  const [resolvedVideoTitle, setResolvedVideoTitle] = useState<string | null>(null)
+  const curriculumMatch = useMemo(() => videoUrl.match(/^\/assets\/curriculum\/unit-(\d+)\/(\d+)\.mp4$/), [videoUrl])
+
+  useEffect(() => {
+    if (!curriculumMatch) {
+      setResolvedVideoUrl(null)
+      setResolvedVideoTitle(null)
+      return
+    }
+    const unit = curriculumMatch[1]
+    const lessonIndex = parseInt(curriculumMatch[2], 10)
+    let cancelled = false
+    fetch(`/api/curriculum-videos?unit=${unit}`)
+      .then((res) => res.ok ? res.json() : { videos: [] })
+      .then((data: { videos?: { index: number; filename: string; title: string }[] }) => {
+        if (cancelled || !Array.isArray(data.videos)) return
+        const entry = data.videos.find((v) => v.index === lessonIndex)
+        if (entry) {
+          const base = `/assets/curriculum/unit-${unit}/`
+          setResolvedVideoUrl(base + encodeURIComponent(entry.filename))
+          setResolvedVideoTitle(entry.title || null)
+        } else {
+          setResolvedVideoUrl(null)
+          setResolvedVideoTitle(null)
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setResolvedVideoUrl(null)
+          setResolvedVideoTitle(null)
+        }
+      })
+    return () => { cancelled = true }
+  }, [curriculumMatch])
+
+  const actualVideoUrl = resolvedVideoUrl ?? videoUrl
+  const displayTitle = resolvedVideoTitle ?? lessonTitle
 
   // Throttled progress update for better performance
   const updateProgress = useCallback(() => {
@@ -103,12 +139,12 @@ export default function VideoPlayer({
     if (!video) return
 
     const handleTimeUpdate = () => {
-      // Throttle updates to every 500ms for better performance
+      // Throttle updates to every 1000ms for better performance and less lag
       if (!progressIntervalRef.current) {
         progressIntervalRef.current = setTimeout(() => {
           updateProgress()
           progressIntervalRef.current = null
-        }, 500)
+        }, 1000)
       }
     }
 
@@ -234,7 +270,7 @@ export default function VideoPlayer({
               )}
             </div>
             <h1 className="text-lg sm:text-xl md:text-2xl font-bold mb-2 drop-shadow-sm truncate">
-              {lessonTitle || 'Math Lesson'}
+              {displayTitle || lessonTitle || 'Math Lesson'}
             </h1>
             {lessonDescription && (
               <p className="text-green-50 text-xs sm:text-sm leading-relaxed line-clamp-2">
@@ -268,6 +304,7 @@ export default function VideoPlayer({
             </div>
           ) : (
             <video
+              key={actualVideoUrl}
               ref={videoRef}
               src={actualVideoUrl}
               controls
@@ -279,6 +316,12 @@ export default function VideoPlayer({
                 if (videoRef.current && videoRef.current.paused) {
                   setIsPaused(true)
                   setIsPlaying(false)
+                }
+              }}
+              onCanPlay={() => {
+                // Optimize video playback
+                if (videoRef.current) {
+                  videoRef.current.playbackRate = 1.0
                 }
               }}
             />

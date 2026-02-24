@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { AIService, QuizQuestion } from '@/lib/ai-service'
-import { getPremadeQuiz } from '@/lib/premade-quizzes'
+import { getPremadeQuiz, getMinQuizQuestions } from '@/lib/premade-quizzes'
 import { getTranslation } from '@/lib/translations'
 import { useStore } from '@/lib/store'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -45,6 +45,16 @@ export default function QuizInterface({
   const chatEndRef = useRef<HTMLDivElement>(null)
   const chatContainerRef = useRef<HTMLDivElement>(null)
   const { recordQuizCompleted, recordAIInteraction, saveQuizProgress, getQuizProgress, clearQuizProgress } = useStore()
+
+  // Question hints for kids
+  const questionHints = [
+    "What does this mean?",
+    "I don't understand",
+    "Can you explain more?",
+    "Show me how to do this",
+    "What is this?",
+    "Help me learn this"
+  ]
 
   const t = (key: string) => getTranslation(language, key)
 
@@ -93,11 +103,25 @@ export default function QuizInterface({
       
       let loadedQuestions: QuizQuestion[] = []
       
+      const minQuestions = getMinQuizQuestions()
       if (premadeQuestions.length > 0) {
-        // Use premade quiz
+        // First lesson of unit: use premade quiz; pad to minimum with AI if needed
         loadedQuestions = premadeQuestions
+        if (premadeQuestions.length < minQuestions) {
+          try {
+            const aiQuestions = await AIService.generateQuiz(lessonId, grade, language, lessonTitle)
+            const needed = minQuestions - premadeQuestions.length
+            const extra = (aiQuestions || []).slice(0, needed).map((q, i) => ({
+              ...q,
+              id: `${lessonId}-${premadeQuestions.length + i + 1}`,
+            }))
+            loadedQuestions = [...premadeQuestions, ...extra]
+          } catch (_) {
+            // Keep premade only if AI fails
+          }
+        }
       } else {
-        // Fallback to AI-generated quiz if no premade quiz exists
+        // Rest of unit: AI-generated quiz (API returns minimum 12)
         const quizQuestions = await AIService.generateQuiz(lessonId, grade, language, lessonTitle)
         if (quizQuestions.length === 0) {
           console.error('No questions generated')
@@ -202,6 +226,11 @@ export default function QuizInterface({
       // Show completion screen when all questions are answered
       setShowExplanation(false) // Hide explanation to show completion screen
       setShowCompletionScreen(true)
+      // Automatically mark quiz as complete when all questions are answered
+      const points = score * 10
+      const isPerfect = score === questions.length
+      recordQuizCompleted()
+      onComplete(points, isPerfect)
     }
   }
 
@@ -257,15 +286,11 @@ export default function QuizInterface({
   }
 
   const handleFinishQuiz = () => {
-    const points = score * 10
-    const isPerfect = score === questions.length
-    // Record quiz completion for badge tracking
-    recordQuizCompleted()
     // Clear quiz progress since it's completed
     clearQuizProgress(lessonId)
-    // Hide completion screen and trigger completion callback
+    // Hide completion screen - navigation will be handled by LearningFlow
     setShowCompletionScreen(false)
-    onComplete(points, isPerfect)
+    // The quiz is already marked as complete in handleNext, so we just need to close the screen
   }
 
   const handleGetHint = async () => {
@@ -482,19 +507,19 @@ export default function QuizInterface({
                 <CheckCircle className="w-16 h-16 text-white" />
               </div>
               <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                Congratulations! 🎉
+                Great job! 🎉
               </h2>
               <p className="text-2xl text-gray-700 mb-2">
-                You got {score} out of {totalQuestions} correct!
+                You got {score} out of {totalQuestions} right!
               </p>
               <p className="text-lg text-gray-600 mb-8">
-                Perfect score! You've mastered this concept! 🌟
+                Perfect! You learned this! 🌟
               </p>
               <button
                 onClick={handleFinishQuiz}
                 className="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold text-lg hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-lg"
               >
-                Continue to Next Lesson
+                Go to next lesson
               </button>
             </>
           ) : (
@@ -503,13 +528,13 @@ export default function QuizInterface({
                 <Lightbulb className="w-16 h-16 text-white" />
               </div>
               <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                Great Effort! 💪
+                Good try! 💪
               </h2>
               <p className="text-2xl text-gray-700 mb-2">
-                You got {score} out of {totalQuestions} correct!
+                You got {score} out of {totalQuestions} right!
               </p>
               <p className="text-lg text-gray-600 mb-8">
-                You missed {totalQuestions - score} concept{totalQuestions - score !== 1 ? 's' : ''}. Would you like to practice the concepts you missed?
+                You missed {totalQuestions - score} question{totalQuestions - score !== 1 ? 's' : ''}. Want to try again?
               </p>
               <div className="flex gap-4 justify-center">
                 <button
@@ -517,13 +542,13 @@ export default function QuizInterface({
                   disabled={isRetrying}
                   className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-semibold text-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg disabled:opacity-50"
                 >
-                  {isRetrying ? 'Generating Questions...' : 'Yes, Let Me Practice!'}
+                  {isRetrying ? 'Making questions...' : 'Yes, let me try again!'}
                 </button>
                 <button
                   onClick={handleFinishQuiz}
                   className="px-8 py-4 bg-gray-300 text-gray-700 rounded-xl font-semibold text-lg hover:bg-gray-400 transition-all duration-200"
                 >
-                  Continue Anyway
+                  Keep going
                 </button>
               </div>
             </>
@@ -667,9 +692,9 @@ export default function QuizInterface({
             <Bot className="w-6 h-6" />
           </div>
           <div className="flex-1">
-            <h3 className="font-bold text-lg">AI Math Helper</h3>
+            <h3 className="font-bold text-lg">AI Helper</h3>
             <p className="text-sm text-blue-100">
-              {showExplanation ? 'Ask for more explanations!' : 'Ask for hints, steps, or examples!'}
+              {showExplanation ? 'Ask me to explain more!' : 'Ask me for help!'}
             </p>
           </div>
           <div className="flex items-center gap-1">
@@ -691,13 +716,32 @@ export default function QuizInterface({
                 <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
                   <Bot className="w-12 h-12 text-white" />
                 </div>
-                <h4 className="font-bold text-gray-900 mb-2 text-lg">Hi! I'm your AI Math Helper 🤖</h4>
+                <h4 className="font-bold text-gray-900 mb-2 text-lg">Hi! I'm your AI Helper 🤖</h4>
                 <p className="text-gray-600 mb-4 text-sm">
-                  Don't understand something? Just ask! I'll explain concepts, give examples, and guide you step-by-step.
+                  Don't understand something? Just ask! I'll explain it in simple words.
                 </p>
-                <p className="text-gray-500 mb-4 text-xs">
-                  Try: "What does [concept] mean?" or "I don't understand [concept]"
-                </p>
+                <div className="mb-4">
+                  <p className="text-gray-500 mb-2 text-xs font-semibold">Try asking:</p>
+                  <div className="flex flex-wrap gap-2 justify-center">
+                    {questionHints.slice(0, 3).map((hint, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => {
+                          setChatInput(hint)
+                          setTimeout(() => {
+                            const form = document.querySelector('form')
+                            if (form) {
+                              form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }))
+                            }
+                          }, 100)
+                        }}
+                        className="bg-white border-2 border-blue-200 text-blue-700 px-3 py-1 rounded-lg text-xs font-medium hover:bg-blue-50 transition-colors"
+                      >
+                        {hint}
+                      </button>
+                    ))}
+                  </div>
+                </div>
                 <button
                   onClick={handleGetHint}
                   className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg"
@@ -717,9 +761,9 @@ export default function QuizInterface({
                 <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
                   <Bot className="w-12 h-12 text-white" />
                 </div>
-                <h4 className="font-bold text-gray-900 mb-2 text-lg">Want to understand more? 💡</h4>
+                <h4 className="font-bold text-gray-900 mb-2 text-lg">Want to learn more? 💡</h4>
                 <p className="text-gray-600 mb-4 text-sm">
-                  Ask me to explain the answer or ask any questions about this concept!
+                  Ask me to explain the answer! I'll use simple words.
                 </p>
                 <button
                   onClick={async () => {
@@ -927,7 +971,7 @@ export default function QuizInterface({
                 type="text"
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
-                placeholder={showExplanation ? "Ask for more explanation..." : "Ask for a hint or help..."}
+                placeholder={showExplanation ? "Ask me to explain more..." : "Ask me a question..."}
                 className="flex-1 px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                 disabled={loadingHint}
               />
@@ -984,6 +1028,18 @@ export default function QuizInterface({
                 </button>
               )}
             </form>
+            {/* Question Hints */}
+            <div className="mt-2 flex flex-wrap gap-2">
+              {questionHints.map((hint, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setChatInput(hint)}
+                  className="bg-white border border-blue-200 text-blue-700 px-2 py-1 rounded-lg text-xs font-medium hover:bg-blue-50 transition-colors"
+                >
+                  {hint}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
     </div>

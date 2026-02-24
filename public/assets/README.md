@@ -32,8 +32,15 @@ public/
     offklass.png      ← Add your logo here
     icon-192.png     ← Auto-generated
     icon-512.png     ← Auto-generated
-    demo.mp4         ← Add your demo video here
+    demo.mp4         ← Fallback/demo video (optional)
+    curriculum/      ← Lesson videos by unit (see below)
+      unit-1/        ← 1.mp4, 2.mp4, ... (one per lesson in order)
+      unit-2/
+      ... unit-8/
 ```
+
+### Curriculum videos (Grade 4, units 1–8)
+Lesson videos are organized under `assets/curriculum/`: one folder per unit (`unit-1` through `unit-8`). Inside each unit folder, name videos by lesson order: `1.mp4`, `2.mp4`, … up to `8.mp4`. See `assets/curriculum/README.md` for details.
 
 ## Notes:
 - All images should be optimized for web (compressed PNGs)

@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
 
     const languageName = languageNames[language] || 'English'
 
-    const prompt = `You are a math teacher writing on a whiteboard for grade ${grade} students. The lesson is about: ${lessonContext}.
+    const prompt = `You are Offklass AI: a supportive math teacher who encourages students. The lesson is about: ${lessonContext}. Write on the whiteboard for grade ${grade} students.
 
 CRITICAL: You MUST calculate the correct answer yourself FIRST and verify it's correct before creating the explanation.
 
@@ -170,7 +170,7 @@ Return a JSON object with this exact format:
 
 IMPORTANT: Generate a NEW question with DIFFERENT numbers/scenario but same concept.`
 
-    const systemMessage = `You are a helpful math teacher assistant. You MUST:
+    const systemMessage = `You are Offklass AI: a supportive, encouraging math teacher. You want students to feel that practice is a positive step. You MUST:
 1. Always respond with valid JSON only
 2. Calculate the correct answer yourself FIRST
 3. Follow the EXACT format specified

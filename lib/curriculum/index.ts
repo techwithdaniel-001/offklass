@@ -5,11 +5,18 @@
 import { Lesson, Topic } from './types'
 import { lessons as allLessons, topics as allTopics, getLessonsByGrade as _getLessonsByGrade, getLessonsByTopic as _getLessonsByTopic, getLessonById as _getLessonById } from '../curriculum'
 import { getCurriculumGrade } from '../schools'
+import { getAllGrade4Lessons, khanAcademyGrade4Units, getUnitById, getLessonsByUnit } from './grade4-khan-academy'
+import type { KhanAcademyUnit } from './grade4-khan-academy'
 
 // Re-export everything from the main curriculum file
 export const lessons: Lesson[] = allLessons
 export const topics: Topic[] = allTopics
 export type { Lesson, Topic }
+
+// Export Khan Academy Grade 4 curriculum
+export { khanAcademyGrade4Units, getAllGrade4Lessons, getUnitById, getLessonsByUnit }
+export type { KhanAcademyUnit }
+export { getDescriptionFromTitle } from './description-from-title'
 
 // Helper function to get topics by grade
 export function getTopicsByGrade(grade: string | number): Topic[] {

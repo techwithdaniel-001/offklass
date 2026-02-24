@@ -27,40 +27,17 @@ export async function POST(request: NextRequest) {
 
     const languageName = languageNames[language] || 'English'
 
-    const prompt = `You are a math teacher creating flashcards for grade ${grade} students. The lesson is about: ${lessonTitle || lessonId}.
-
-Create 4-6 flashcards in ${languageName}. Each flashcard should:
-1. Have a concept term on the front (short, 1-3 words)
-2. Have a clear explanation on the back (2-3 sentences)
-3. Be appropriate for grade ${grade} level
-4. Help students understand key concepts from the lesson
-
-Return a JSON array with this exact format:
-[
-  {
-    "front": "Concept term in ${languageName}",
-    "back": "Clear explanation in ${languageName}",
-    "concept": "concept_keyword"
-  }
-]
-
-Only return the JSON array, no other text.`
+    const prompt = `Create 4-6 math flashcards for grade ${grade} in ${languageName}. Lesson: ${lessonTitle || lessonId}. Front = short term (1-3 words), back = simple explanation (2-3 sentences). Use simple words (add not addition, take away not subtract). Return a JSON object with key "flashcards" containing an array of objects with "front", "back", "concept". Only JSON, no other text.`
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
-        {
-          role: 'system',
-          content:
-            'You are a helpful math teacher. Always respond with valid JSON only.',
-        },
-        {
-          role: 'user',
-          content: prompt,
-        },
+        { role: 'system', content: 'You are a math teacher. Respond with valid JSON only: {"flashcards":[{front,back,concept},...]}.' },
+        { role: 'user', content: prompt },
       ],
-      temperature: 0.7,
-      max_tokens: 1500,
+      temperature: 0.4,
+      max_tokens: 1000,
+      response_format: { type: 'json_object' },
     })
 
     const content = completion.choices[0]?.message?.content
@@ -68,12 +45,12 @@ Only return the JSON array, no other text.`
       throw new Error('No response from OpenAI')
     }
 
-    // Parse JSON response
-    let flashcards
+    // Parse JSON response (response_format: json_object ensures valid object)
+    let flashcards: any[]
     try {
-      // Remove any markdown code blocks if present
       const cleanedContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
-      flashcards = JSON.parse(cleanedContent)
+      const parsed = JSON.parse(cleanedContent)
+      flashcards = Array.isArray(parsed.flashcards) ? parsed.flashcards : Array.isArray(parsed) ? parsed : []
     } catch (parseError) {
       console.error('Failed to parse OpenAI response:', content)
       throw new Error('Invalid JSON response from AI')

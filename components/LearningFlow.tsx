@@ -83,7 +83,8 @@ export default function LearningFlow({ lesson }: LearningFlowProps) {
       recordPerfectQuiz()
     }
     setQuizCompleted(true)
-    // Don't auto-navigate, let user choose
+    // Quiz completion will trigger the useEffect that checks for full lesson completion
+    // which will then navigate to the next lesson
   }
 
   // Show quiz tour only once when quiz is first opened (never again after user has seen it)
@@ -133,9 +134,10 @@ export default function LearningFlow({ lesson }: LearningFlowProps) {
       if (nextLesson) {
         // Show completion message briefly, then auto-navigate to next lesson
         setCurrentStep('complete')
+        // Navigate immediately to next lesson (completion screen will show briefly)
         setTimeout(() => {
           router.push(`/learn/${nextLesson.id}`)
-        }, 2000) // Show completion message for 2 seconds
+        }, 1500) // Show completion message for 1.5 seconds
       } else {
         // No more lessons, show completion screen
         setCurrentStep('complete')

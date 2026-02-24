@@ -51,8 +51,18 @@ export default function LearningPath({ grade }: LearningPathProps) {
     )
     
     const unlocked: string[] = []
+    // Unlock up to 2 lessons ahead of the last completed lesson
+    // This means: completed lesson + next lesson + one more ahead
     for (let i = 0; i <= lastCompletedIndex + 2 && i < allLessons.length; i++) {
       unlocked.push(allLessons[i].id)
+    }
+    
+    // Also unlock the next lesson after the last completed one
+    if (lastCompletedIndex >= 0 && lastCompletedIndex + 1 < allLessons.length) {
+      const nextLessonId = allLessons[lastCompletedIndex + 1].id
+      if (!unlocked.includes(nextLessonId)) {
+        unlocked.push(nextLessonId)
+      }
     }
     
     return unlocked
