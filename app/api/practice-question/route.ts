@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+function getOpenAI() {
+  const apiKey = process.env.OPENAI_API_KEY
+  if (!apiKey) throw new Error('OpenAI API key not configured')
+  return new OpenAI({ apiKey })
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -177,6 +179,7 @@ IMPORTANT: Generate a NEW question with DIFFERENT numbers/scenario but same conc
 4. Generate a NEW practice question (different from previous ones)
 5. Verify your math is correct before responding`
 
+    const openai = getOpenAI()
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [

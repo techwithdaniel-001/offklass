@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+function getOpenAI() {
+  const apiKey = process.env.OPENAI_API_KEY
+  if (!apiKey) throw new Error('OpenAI API key not configured')
+  return new OpenAI({ apiKey })
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -162,6 +164,7 @@ CRITICAL MATH RULES:
 
 Return a JSON object with a single key "questions" containing an array of question objects. Each object: "question", "options" (array of 4 strings), "correctAnswer" (0-3), "explanation" (short step-by-step), "difficulty" ("easy"/"medium"). Example: {"questions":[{"question":"...","options":["a","b","c","d"],"correctAnswer":0,"explanation":"Let me solve this:...","difficulty":"easy"}]}. Only return this JSON object, no other text.`
 
+    const openai = getOpenAI()
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [

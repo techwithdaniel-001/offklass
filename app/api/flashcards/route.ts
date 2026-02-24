@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+function getOpenAI() {
+  const apiKey = process.env.OPENAI_API_KEY
+  if (!apiKey) throw new Error('OpenAI API key not configured')
+  return new OpenAI({ apiKey })
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -29,6 +31,7 @@ export async function POST(request: NextRequest) {
 
     const prompt = `Create 4-6 math flashcards for grade ${grade} in ${languageName}. Lesson: ${lessonTitle || lessonId}. Front = short term (1-3 words), back = simple explanation (2-3 sentences). Use simple words (add not addition, take away not subtract). Return a JSON object with key "flashcards" containing an array of objects with "front", "back", "concept". Only JSON, no other text.`
 
+    const openai = getOpenAI()
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [

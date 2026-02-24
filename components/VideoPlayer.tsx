@@ -90,21 +90,29 @@ export default function VideoPlayer({
           setResolvedVideoUrl(base + encodeURIComponent(entry.filename))
           setResolvedVideoTitle(entry.title || null)
         } else {
-          setResolvedVideoUrl(null)
+          // No match: use fallback URL so we exit loading state (video may 404 and show retry)
+          setResolvedVideoUrl(videoUrl)
           setResolvedVideoTitle(null)
         }
       })
       .catch(() => {
         if (!cancelled) {
-          setResolvedVideoUrl(null)
+          setResolvedVideoUrl(videoUrl)
           setResolvedVideoTitle(null)
         }
       })
     return () => { cancelled = true }
   }, [curriculumMatch])
 
+  // For curriculum URLs, wait for resolved URL so we never try to load the placeholder (e.g. 1.mp4) which 404s and sticks in error state
+  const isCurriculumPlaceholder = curriculumMatch && resolvedVideoUrl === null
   const actualVideoUrl = resolvedVideoUrl ?? videoUrl
   const displayTitle = resolvedVideoTitle ?? lessonTitle
+
+  // Clear error when we get a resolved URL (e.g. after fetch completes) so the video can show
+  useEffect(() => {
+    if (resolvedVideoUrl) setError(null)
+  }, [resolvedVideoUrl])
 
   // Throttled progress update for better performance
   const updateProgress = useCallback(() => {
@@ -284,8 +292,12 @@ export default function VideoPlayer({
       {/* Video Container */}
       <div className="relative bg-white">
         <div className="aspect-video bg-black relative overflow-hidden">
-          {/* Native HTML5 Video Player - Better iPad compatibility */}
-          {error ? (
+          {/* Wait for curriculum video to resolve so we don't load placeholder (1.mp4) and hit 404 */}
+          {isCurriculumPlaceholder ? (
+            <div className="w-full h-full flex items-center justify-center bg-gray-900 text-white">
+              <div className="animate-pulse text-green-400">Loading video...</div>
+            </div>
+          ) : error ? (
             <div className="w-full h-full flex items-center justify-center bg-gray-900 text-white p-8">
               <div className="text-center">
                 <p className="text-lg mb-4">{error}</p>

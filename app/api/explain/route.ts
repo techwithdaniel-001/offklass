@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+function getOpenAI() {
+  const apiKey = process.env.OPENAI_API_KEY
+  if (!apiKey) throw new Error('OpenAI API key not configured')
+  return new OpenAI({ apiKey })
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,6 +17,8 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       )
     }
+
+    const openai = getOpenAI()
 
     // Language names for prompts
     const languageNames: Record<string, string> = {
