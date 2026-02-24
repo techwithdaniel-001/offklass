@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useStore } from '@/lib/store'
 import { getLessonById, getLessonsByGrade, Lesson } from '@/lib/curriculum/index'
+import { loadQuizQuestionsForLesson } from '@/lib/quiz-loader'
 import { getTranslation } from '@/lib/translations'
 import { badges, checkBadgeEarned } from '@/lib/badges'
 import VideoPlayer from './VideoPlayer'
@@ -22,7 +23,7 @@ interface LearningFlowProps {
 
 export default function LearningFlow({ lesson }: LearningFlowProps) {
   const router = useRouter()
-  const { user, addPoints, completeLesson, recordPerfectQuiz, addBadge } = useStore()
+  const { user, addPoints, completeLesson, recordPerfectQuiz, addBadge, getQuizProgress, saveQuizProgress, clearQuizProgress } = useStore()
   const [currentStep, setCurrentStep] = useState<Step>('video')
   const [videoWatched, setVideoWatched] = useState(false)
   const [quizCompleted, setQuizCompleted] = useState(false)
@@ -128,6 +129,43 @@ export default function LearningFlow({ lesson }: LearningFlowProps) {
       setTimeout(() => router.push(`/learn/${nextLesson.id}`), 1200)
     }
   }, [lesson.id, lesson.grade, user.completedLessons, user.school, completeLesson, addPoints, router])
+
+  // Prefetch next lesson's quiz so it's already made when they go to the next lesson
+  useEffect(() => {
+    if (!user) return
+    const allLessons = getLessonsByGrade(lesson.grade, user.school || 'regina')
+    const currentIndex = allLessons.findIndex((l) => l.id === lesson.id)
+    const nextLesson = allLessons[currentIndex + 1]
+    if (!nextLesson) return
+    const existing = getQuizProgress(nextLesson.id)
+    if (existing?.questions?.length && typeof existing.questions[0] === 'object' && 'options' in (existing.questions[0] as object)) return
+    let cancelled = false
+    loadQuizQuestionsForLesson(
+      nextLesson.id,
+      user.grade,
+      user.language,
+      nextLesson.title,
+      nextLesson.description
+    )
+      .then((questions) => {
+        if (cancelled || !questions.length) return
+        saveQuizProgress(nextLesson.id, {
+          questions,
+          currentQuestion: 0,
+          score: 0,
+          selectedAnswers: [],
+          showExplanation: [],
+          failedQuestions: [],
+        })
+      })
+      .catch(() => {})
+    return () => { cancelled = true }
+  }, [lesson.id, lesson.grade, user?.grade, user?.language, user?.school, getQuizProgress, saveQuizProgress])
+
+  const handlePracticeAgain = () => {
+    clearQuizProgress(lesson.id)
+    setCurrentStep('quiz')
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-cyan-50">
@@ -250,6 +288,7 @@ export default function LearningFlow({ lesson }: LearningFlowProps) {
               <QuizInterface
                 lessonId={lesson.id}
                 lessonTitle={lesson.title}
+                lessonDescription={lesson.description}
                 grade={user.grade}
                 language={user.language}
                 onComplete={handleQuizComplete}
@@ -270,6 +309,7 @@ export default function LearningFlow({ lesson }: LearningFlowProps) {
               <FlashcardInterface
                 lessonId={lesson.id}
                 lessonTitle={lesson.title}
+                lessonDescription={lesson.description}
                 grade={user.grade}
                 language={user.language}
                 onComplete={handleFlashcardsComplete}
@@ -303,7 +343,13 @@ export default function LearningFlow({ lesson }: LearningFlowProps) {
                       : "You've completed all lessons in this grade! 🏆"
                   })()}
                 </p>
-                <div className="flex gap-4 justify-center">
+                <div className="flex flex-wrap gap-4 justify-center">
+                  <button
+                    onClick={handlePracticeAgain}
+                    className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:from-green-700 hover:to-emerald-700 transition-all duration-200"
+                  >
+                    Practice again (new quiz)
+                  </button>
                   <button
                     onClick={() => router.push('/dashboard')}
                     className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200"

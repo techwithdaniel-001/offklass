@@ -9,7 +9,7 @@ function getOpenAI() {
 
 export async function POST(request: NextRequest) {
   try {
-    const { lessonId, grade, language, lessonTitle, failedConcepts } = await request.json()
+    const { lessonId, grade, language, lessonTitle, lessonDescription, failedConcepts } = await request.json()
     const conceptsToFocus = Array.isArray(failedConcepts) && failedConcepts.length > 0
       ? failedConcepts.filter((c: unknown) => typeof c === 'string').slice(0, 20)
       : []
@@ -21,8 +21,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Get lesson title for context
-    const lessonContext = lessonTitle || lessonId
+    // Match the exact video lesson: title + description so quiz is not different from what they just learned
+    const lessonContext = [lessonTitle, lessonDescription].filter(Boolean).join('. ') || lessonId
 
     // Language names for prompts
     const languageNames: Record<string, string> = {
@@ -38,7 +38,10 @@ export async function POST(request: NextRequest) {
     const focusInstruction = conceptsToFocus.length > 0
       ? `\nIMPORTANT: The student got these questions/concepts wrong. Create questions that FOCUS on practicing these same concepts (rephrased, different numbers):\n${conceptsToFocus.map((c: string) => `- ${c}`).join('\n')}\n`
       : ''
-    const prompt = `You are a math teacher writing on a whiteboard for grade ${grade} students (use very simple words like you're talking to a 5-year-old). The lesson is about: ${lessonContext}.${focusInstruction}
+    const prompt = `You are a math teacher writing on a whiteboard for grade ${grade} students (use very simple words like you're talking to a 5-year-old).
+
+CRITICAL: The quiz MUST match the EXACT lesson the student just watched. Use ONLY this lesson topic — do not add unrelated concepts.
+Lesson: ${lessonContext}.${focusInstruction}
 
 CRITICAL: You MUST calculate the correct answer yourself FIRST and verify it's correct before creating the explanation.
 

@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { AIService, QuizQuestion } from '@/lib/ai-service'
-import { getPremadeQuiz, getMinQuizQuestions } from '@/lib/premade-quizzes'
+import { loadQuizQuestionsForLesson, shuffleQuestionOptions } from '@/lib/quiz-loader'
+import { getPremadeQuiz } from '@/lib/premade-quizzes'
 import { getTranslation } from '@/lib/translations'
 import { useStore } from '@/lib/store'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -11,6 +12,7 @@ import { CheckCircle, XCircle, Lightbulb, ArrowRight, ArrowLeft, MessageCircle, 
 interface QuizInterfaceProps {
   lessonId: string
   lessonTitle?: string
+  lessonDescription?: string
   grade: string
   language: string
   onComplete: (points: number, isPerfect: boolean) => void
@@ -21,6 +23,7 @@ interface QuizInterfaceProps {
 export default function QuizInterface({
   lessonId,
   lessonTitle,
+  lessonDescription,
   grade,
   language,
   onComplete,
@@ -46,7 +49,7 @@ export default function QuizInterface({
   const [hasRecordedAIInteraction, setHasRecordedAIInteraction] = useState(false)
   const chatEndRef = useRef<HTMLDivElement>(null)
   const chatContainerRef = useRef<HTMLDivElement>(null)
-  const { recordQuizCompleted, recordAIInteraction, saveQuizProgress, getQuizProgress, clearQuizProgress } = useStore()
+  const { recordQuizCompleted, recordAIInteraction, saveQuizProgress, getQuizProgress } = useStore()
 
   // Question hints for kids
   const questionHints = [
@@ -97,57 +100,51 @@ export default function QuizInterface({
   const loadQuestions = async () => {
     setLoading(true)
     try {
-      // Check for saved quiz progress
       const savedProgress = getQuizProgress(lessonId)
-      
-      // First try to get premade quiz
-      const premadeQuestions = getPremadeQuiz(lessonId)
-      
-      let loadedQuestions: QuizQuestion[] = []
-      
-      const minQuestions = getMinQuizQuestions()
-      if (premadeQuestions.length > 0) {
-        // First lesson of unit: use premade quiz; pad to minimum with AI if needed
-        loadedQuestions = premadeQuestions
-        if (premadeQuestions.length < minQuestions) {
-          try {
-            const aiQuestions = await AIService.generateQuiz(lessonId, grade, language, lessonTitle)
-            const needed = minQuestions - premadeQuestions.length
-            const extra = (aiQuestions || []).slice(0, needed).map((q, i) => ({
-              ...q,
-              id: `${lessonId}-${premadeQuestions.length + i + 1}`,
-            }))
-            loadedQuestions = [...premadeQuestions, ...extra]
-          } catch (_) {
-            // Keep premade only if AI fails
-          }
+      // Restore from store first: never regenerate until they press Practice again (or new lesson)
+      const hasFullQuestions =
+        savedProgress?.questions?.length &&
+        savedProgress.questions[0] &&
+        'options' in savedProgress.questions[0] &&
+        Array.isArray((savedProgress.questions[0] as QuizQuestion).options)
+
+      if (hasFullQuestions && savedProgress!.questions.length > 0) {
+        const restored = savedProgress!.questions as QuizQuestion[]
+        setQuestions(restored)
+        setCurrentQuestion(savedProgress!.currentQuestion)
+        setScore(savedProgress!.score)
+        setSelectedAnswer(savedProgress!.selectedAnswers[savedProgress!.currentQuestion] ?? null)
+        setShowExplanation(savedProgress!.showExplanation[savedProgress!.currentQuestion] ?? false)
+        setFailedQuestions(restored.filter((q) => savedProgress!.failedQuestions.includes(q.id)))
+        if (savedProgress!.currentQuestion >= restored.length) {
+          setShowCompletionScreen(true)
         }
-      } else {
-        // Rest of unit: AI-generated quiz (API returns minimum 12)
-        const quizQuestions = await AIService.generateQuiz(lessonId, grade, language, lessonTitle)
-        if (quizQuestions.length === 0) {
-          console.error('No questions generated')
-        }
-        loadedQuestions = quizQuestions
+        setLoading(false)
+        return
       }
-      
+
+      // No saved quiz for this lesson: load once (premade or AI) and save so we never regenerate until Practice again
+      const loadedQuestions = await loadQuizQuestionsForLesson(
+        lessonId,
+        grade,
+        language,
+        lessonTitle,
+        lessonDescription
+      )
+      if (loadedQuestions.length === 0) {
+        console.error('No questions loaded')
+        setLoading(false)
+        return
+      }
       setQuestions(loadedQuestions)
-      
-      // Restore progress if exists and matches current questions
-      if (savedProgress && savedProgress.questions.length === loadedQuestions.length) {
-        // Verify question IDs match
-        const questionIdsMatch = savedProgress.questions.every((savedQ, idx) => 
-          savedQ.id === loadedQuestions[idx]?.id
-        )
-        
-        if (questionIdsMatch && savedProgress.currentQuestion < loadedQuestions.length) {
-          setCurrentQuestion(savedProgress.currentQuestion)
-          setScore(savedProgress.score)
-          setSelectedAnswer(savedProgress.selectedAnswers[savedProgress.currentQuestion] ?? null)
-          setShowExplanation(savedProgress.showExplanation[savedProgress.currentQuestion] ?? false)
-          setFailedQuestions(loadedQuestions.filter(q => savedProgress.failedQuestions.includes(q.id)))
-        }
-      }
+      saveQuizProgress(lessonId, {
+        questions: loadedQuestions,
+        currentQuestion: 0,
+        score: 0,
+        selectedAnswers: [],
+        showExplanation: [],
+        failedQuestions: [],
+      })
     } catch (error) {
       console.error('Error loading questions:', error)
     } finally {
@@ -169,10 +166,10 @@ export default function QuizInterface({
     }
     setShowExplanation(true)
     
-    // Save progress
-    const selectedAnswers = Array(questions.length).fill(null)
+    const prev = getQuizProgress(lessonId)
+    const selectedAnswers = [...(prev?.selectedAnswers ?? Array(questions.length).fill(null))]
     selectedAnswers[currentQuestion] = index
-    const showExplanationArray = Array(questions.length).fill(false)
+    const showExplanationArray = [...(prev?.showExplanation ?? Array(questions.length).fill(false))]
     showExplanationArray[currentQuestion] = true
     
     saveQuizProgress(lessonId, {
@@ -180,8 +177,8 @@ export default function QuizInterface({
       score: newScore,
       selectedAnswers,
       showExplanation: showExplanationArray,
-      failedQuestions: correct ? failedQuestions.map(q => q.id) : [...failedQuestions.map(q => q.id), questions[currentQuestion].id],
-      questions: questions.map(q => ({ id: q.id, question: q.question })),
+      failedQuestions: correct ? failedQuestions.map((q) => q.id) : [...failedQuestions.map((q) => q.id), questions[currentQuestion].id],
+      questions,
     })
     
     // Only show explanation automatically for incorrect answers
@@ -206,14 +203,12 @@ export default function QuizInterface({
       setSelectedAnswer(null)
       setShowExplanation(false)
       setIsCorrect(null)
-      setChatMessages([]) // Clear chat for new question
+      setChatMessages([])
       
-      // Save progress
-      const selectedAnswers = Array(questions.length).fill(null)
-      for (let i = 0; i <= currentQuestion; i++) {
-        selectedAnswers[i] = i === currentQuestion ? selectedAnswer : null
-      }
-      const showExplanationArray = Array(questions.length).fill(false)
+      const prev = getQuizProgress(lessonId)
+      const selectedAnswers = [...(prev?.selectedAnswers ?? Array(questions.length).fill(null))]
+      selectedAnswers[currentQuestion] = selectedAnswer
+      const showExplanationArray = [...(prev?.showExplanation ?? Array(questions.length).fill(false))]
       showExplanationArray[currentQuestion] = true
       
       saveQuizProgress(lessonId, {
@@ -221,14 +216,25 @@ export default function QuizInterface({
         score,
         selectedAnswers,
         showExplanation: showExplanationArray,
-        failedQuestions: failedQuestions.map(q => q.id),
-        questions: questions.map(q => ({ id: q.id, question: q.question })),
+        failedQuestions: failedQuestions.map((q) => q.id),
+        questions,
       })
     } else {
-      // Show completion screen when all questions are answered
-      setShowExplanation(false) // Hide explanation to show completion screen
+      setShowExplanation(false)
       setShowCompletionScreen(true)
-      // Automatically mark quiz as complete when all questions are answered
+      const prev = getQuizProgress(lessonId)
+      const selectedAnswers = [...(prev?.selectedAnswers ?? Array(questions.length).fill(null))]
+      selectedAnswers[currentQuestion] = selectedAnswer
+      const showExplanationArray = [...(prev?.showExplanation ?? Array(questions.length).fill(false))]
+      showExplanationArray[currentQuestion] = true
+      saveQuizProgress(lessonId, {
+        currentQuestion: questions.length,
+        score,
+        selectedAnswers,
+        showExplanation: showExplanationArray,
+        failedQuestions: failedQuestions.map((q) => q.id),
+        questions,
+      })
       const points = score * 10
       const isPerfect = score === questions.length
       recordQuizCompleted()
@@ -247,10 +253,12 @@ export default function QuizInterface({
         grade,
         language,
         lessonTitle,
-        failedConcepts
+        failedConcepts,
+        lessonDescription
       )
       if (retryQuestions.length > 0) {
-        setQuestions(retryQuestions)
+        const shuffled = retryQuestions.map(shuffleQuestionOptions)
+        setQuestions(shuffled)
         setCurrentQuestion(0)
         setSelectedAnswer(null)
         setShowExplanation(false)
@@ -258,7 +266,14 @@ export default function QuizInterface({
         setScore(0)
         setFailedQuestions([])
         setChatMessages([])
-        clearQuizProgress(lessonId)
+        saveQuizProgress(lessonId, {
+          questions: shuffled,
+          currentQuestion: 0,
+          score: 0,
+          selectedAnswers: [],
+          showExplanation: [],
+          failedQuestions: [],
+        })
       } else {
         setChatMessages(prev => [...prev, {
           role: 'assistant',
@@ -278,12 +293,13 @@ export default function QuizInterface({
   }
 
   const handleGoToNextLesson = () => {
-    clearQuizProgress(lessonId)
     setShowCompletionScreen(false)
     onGoToNextLesson?.()
   }
 
   const handleRetrySameQuiz = () => {
+    const shuffled = questions.map(shuffleQuestionOptions)
+    setQuestions(shuffled)
     setCurrentQuestion(0)
     setSelectedAnswer(null)
     setShowExplanation(false)
@@ -292,6 +308,14 @@ export default function QuizInterface({
     setFailedQuestions([])
     setShowCompletionScreen(false)
     setChatMessages([])
+    saveQuizProgress(lessonId, {
+      questions: shuffled,
+      currentQuestion: 0,
+      score: 0,
+      selectedAnswers: [],
+      showExplanation: [],
+      failedQuestions: [],
+    })
   }
 
   const handleGetHint = async () => {
@@ -490,8 +514,9 @@ export default function QuizInterface({
 
   // Check if current question is from premade quiz
   const isPremadeQuiz = getPremadeQuiz(lessonId).length > 0
-  const isPerfect = score === questions.length
   const totalQuestions = questions.length
+  const displayScore = Math.min(score, totalQuestions)
+  const isPerfect = displayScore === totalQuestions
 
   // Show completion screen
   if (showCompletionScreen) {
@@ -511,7 +536,7 @@ export default function QuizInterface({
                 Great job! 🎉
               </h2>
               <p className="text-2xl text-gray-700 mb-2">
-                You got {score} out of {totalQuestions} right!
+                You got {displayScore} out of {totalQuestions} right!
               </p>
               <p className="text-lg text-gray-600 mb-8">
                 Perfect! You can try again for more practice or go to the next lesson.
@@ -540,7 +565,7 @@ export default function QuizInterface({
                 Good try! 💪
               </h2>
               <p className="text-2xl text-gray-700 mb-2">
-                You got {score} out of {totalQuestions} right!
+                You got {displayScore} out of {totalQuestions} right!
               </p>
               <p className="text-lg text-gray-600 mb-8">
                 Try again and the AI will make questions based on what you missed, or go to the next lesson.

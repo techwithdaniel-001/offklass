@@ -11,6 +11,7 @@ import { RotateCcw, ArrowRight, ArrowLeft, Lightbulb, CheckCircle, Trophy, Spark
 interface FlashcardInterfaceProps {
   lessonId: string
   lessonTitle?: string
+  lessonDescription?: string
   grade: string
   language: string
   onComplete: () => void
@@ -20,6 +21,7 @@ interface FlashcardInterfaceProps {
 export default function FlashcardInterface({
   lessonId,
   lessonTitle,
+  lessonDescription,
   grade,
   language,
   onComplete,
@@ -67,7 +69,7 @@ export default function FlashcardInterface({
         loadedCards = premadeCards
       } else {
         // Fallback to AI-generated flashcards if no premade flashcards exist
-        const cards = await AIService.generateFlashcards(lessonId, grade, language, lessonTitle)
+        const cards = await AIService.generateFlashcards(lessonId, grade, language, lessonTitle, lessonDescription)
         if (cards.length === 0) {
           console.error('No flashcards generated')
         }

@@ -9,7 +9,7 @@ function getOpenAI() {
 
 export async function POST(request: NextRequest) {
   try {
-    const { lessonId, grade, language, lessonTitle } = await request.json()
+    const { lessonId, grade, language, lessonTitle, lessonDescription } = await request.json()
 
     if (!process.env.OPENAI_API_KEY) {
       return NextResponse.json(
@@ -29,7 +29,8 @@ export async function POST(request: NextRequest) {
 
     const languageName = languageNames[language] || 'English'
 
-    const prompt = `Create 4-6 math flashcards for grade ${grade} in ${languageName}. Lesson: ${lessonTitle || lessonId}. Front = short term (1-3 words), back = simple explanation (2-3 sentences). Use simple words (add not addition, take away not subtract). Return a JSON object with key "flashcards" containing an array of objects with "front", "back", "concept". Only JSON, no other text.`
+    const lessonContext = [lessonTitle, lessonDescription].filter(Boolean).join('. ') || lessonId
+    const prompt = `Create 4-6 math flashcards for grade ${grade} in ${languageName}. CRITICAL: Flashcards MUST match the EXACT lesson the student just watched (same topic as the video). Lesson: ${lessonContext}. Front = short term (1-3 words), back = simple explanation (2-3 sentences). Use simple words (add not addition, take away not subtract). Return a JSON object with key "flashcards" containing an array of objects with "front", "back", "concept". Only JSON, no other text.`
 
     const openai = getOpenAI()
     const completion = await openai.chat.completions.create({

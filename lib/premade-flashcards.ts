@@ -324,6 +324,78 @@ export const premadeFlashcards: Record<string, Flashcard[]> = {
     },
   ],
 
+  // Grade 4 Unit 2: Addition & Subtraction (first lesson)
+  'add-subtract-3': [
+    { id: 'add-subtract-3-flash-1', front: 'What is addition?', back: 'Addition is putting two or more numbers together to get a total (sum).', concept: 'Addition' },
+    { id: 'add-subtract-3-flash-2', front: 'What is subtraction?', back: 'Subtraction is taking one number away from another to find the difference.', concept: 'Subtraction' },
+    { id: 'add-subtract-3-flash-3', front: 'What does regrouping mean?', back: 'Regrouping (carrying or borrowing) means moving value between place values when adding or subtracting.', concept: 'Regrouping' },
+    { id: 'add-subtract-3-flash-4', front: 'How do you add 47 + 38?', back: 'Add ones: 7 + 8 = 15, write 5 and carry 1 ten. Add tens: 1 + 4 + 3 = 8. Answer: 85.', concept: 'Adding two-digit' },
+    { id: 'add-subtract-3-flash-5', front: 'How do you subtract 52 − 27?', back: 'Borrow 1 ten: 12 − 7 = 5 ones, then 4 − 2 = 2 tens. Answer: 25.', concept: 'Subtracting two-digit' },
+    { id: 'add-subtract-3-flash-6', front: 'What is the sum of 23 + 19?', back: '23 + 19 = 42.', concept: 'Addition fact' },
+    { id: 'add-subtract-3-flash-7', front: 'What is 60 − 34?', back: '60 − 34 = 26.', concept: 'Subtraction fact' },
+    { id: 'add-subtract-3-flash-8', front: 'What is estimation?', back: 'Estimation is rounding numbers to get a quick approximate answer before calculating exactly.', concept: 'Estimation' },
+  ],
+
+  // Grade 4 Unit 4: Multiply by 2-digit (first lesson)
+  'multi-digit-multiply': [
+    { id: 'multi-digit-multiply-flash-1', front: 'How do you multiply by a 2-digit number?', back: 'Multiply by the ones digit first, then by the tens digit, then add the two partial products.', concept: '2-digit multiplication' },
+    { id: 'multi-digit-multiply-flash-2', front: 'What is 24 × 12?', back: '24 × 2 = 48, 24 × 10 = 240; 48 + 240 = 288.', concept: 'Example' },
+    { id: 'multi-digit-multiply-flash-3', front: 'Why do we put a zero in the second partial product?', back: 'We are multiplying by tens, so the result is in the tens place; the zero holds the ones place.', concept: 'Place value' },
+    { id: 'multi-digit-multiply-flash-4', front: 'What is the area model for multiplication?', back: 'Splitting a rectangle into parts (e.g. 20+4 and 10+2) and multiplying each part, then adding.', concept: 'Area model' },
+    { id: 'multi-digit-multiply-flash-5', front: 'What is 15 × 11?', back: '15 × 11 = 165.', concept: 'Quick fact' },
+    { id: 'multi-digit-multiply-flash-6', front: 'What is 30 × 4?', back: '30 × 4 = 120.', concept: 'Mental math' },
+    { id: 'multi-digit-multiply-flash-7', front: 'What are partial products?', back: 'Partial products are the results you get when you multiply by each digit separately before adding.', concept: 'Partial products' },
+    { id: 'multi-digit-multiply-flash-8', front: 'What is 18 × 5?', back: '18 × 5 = 90.', concept: 'Practice' },
+  ],
+
+  // Grade 4 Unit 5: Division (first lesson)
+  'division-intro': [
+    { id: 'division-intro-flash-1', front: 'What is division?', back: 'Division is splitting a number into equal parts or finding how many times one number fits into another.', concept: 'Division' },
+    { id: 'division-intro-flash-2', front: 'What is the division symbol?', back: 'We use ÷ or / or the bar in a fraction. 12 ÷ 3 means 12 split into 3 equal parts.', concept: 'Symbol' },
+    { id: 'division-intro-flash-3', front: 'What is 20 ÷ 4?', back: '20 ÷ 4 = 5, because 4 × 5 = 20.', concept: 'Division fact' },
+    { id: 'division-intro-flash-4', front: 'What is a quotient?', back: 'The quotient is the answer to a division problem.', concept: 'Quotient' },
+    { id: 'division-intro-flash-5', front: 'What is a remainder?', back: 'A remainder is what is left over when one number does not divide evenly into another.', concept: 'Remainder' },
+    { id: 'division-intro-flash-6', front: 'What is 17 ÷ 5?', back: '17 ÷ 5 = 3 remainder 2, because 5 × 3 = 15 and 17 − 15 = 2.', concept: 'Remainder example' },
+    { id: 'division-intro-flash-7', front: 'How is division related to multiplication?', back: 'Division is the opposite of multiplication. If 6 × 4 = 24, then 24 ÷ 4 = 6 and 24 ÷ 6 = 4.', concept: 'Inverse' },
+    { id: 'division-intro-flash-8', front: 'What is 36 ÷ 6?', back: '36 ÷ 6 = 6.', concept: 'Practice' },
+  ],
+
+  // Grade 4 Unit 6: Factors & Multiples (first lesson) – same key as quiz
+  'factors-multiples': [
+    { id: 'factors-multiples-flash-1', front: 'What is a factor?', back: 'A factor is a number that divides evenly into another number. The factors of 12 are 1, 2, 3, 4, 6, 12.', concept: 'Factor' },
+    { id: 'factors-multiples-flash-2', front: 'What is a multiple?', back: 'A multiple is the result of multiplying a number by a whole number. Multiples of 5 are 5, 10, 15, 20, …', concept: 'Multiple' },
+    { id: 'factors-multiples-flash-3', front: 'What are the factors of 10?', back: 'The factors of 10 are 1, 2, 5, and 10.', concept: 'Factors example' },
+    { id: 'factors-multiples-flash-4', front: 'What are the first 4 multiples of 7?', back: '7, 14, 21, 28.', concept: 'Multiples example' },
+    { id: 'factors-multiples-flash-5', front: 'What is a prime number?', back: 'A prime number has exactly two factors: 1 and itself. Examples: 2, 3, 5, 7.', concept: 'Prime' },
+    { id: 'factors-multiples-flash-6', front: 'What is a composite number?', back: 'A composite number has more than two factors. Examples: 4, 6, 8, 9.', concept: 'Composite' },
+    { id: 'factors-multiples-flash-7', front: 'Is 1 prime or composite?', back: 'Neither. 1 has only one factor (itself), so it is not prime or composite.', concept: 'One' },
+    { id: 'factors-multiples-flash-8', front: 'What are the factors of 8?', back: 'The factors of 8 are 1, 2, 4, and 8.', concept: 'Practice' },
+  ],
+
+  // Grade 4 Unit 7: Equivalent fractions (first lesson)
+  'equivalent-fractions': [
+    { id: 'equivalent-fractions-flash-1', front: 'What are equivalent fractions?', back: 'Equivalent fractions are different fractions that name the same amount. Example: 1/2 = 2/4 = 3/6.', concept: 'Equivalent fractions' },
+    { id: 'equivalent-fractions-flash-2', front: 'How do you find equivalent fractions?', back: 'Multiply or divide the numerator and denominator by the same number. 1/2 = 2/4 (×2).', concept: 'Finding equivalent' },
+    { id: 'equivalent-fractions-flash-3', front: 'Is 2/4 the same as 1/2?', back: 'Yes. 2/4 = 1/2 because 2÷2/4÷2 = 1/2.', concept: 'Example' },
+    { id: 'equivalent-fractions-flash-4', front: 'What is 3/6 in simplest form?', back: '3/6 = 1/2 (divide numerator and denominator by 3).', concept: 'Simplest form' },
+    { id: 'equivalent-fractions-flash-5', front: 'What fraction is equivalent to 2/3 with denominator 9?', back: '2/3 = 6/9 (multiply numerator and denominator by 3).', concept: 'Same value' },
+    { id: 'equivalent-fractions-flash-6', front: 'What does simplest form mean?', back: 'Simplest form means the numerator and denominator have no common factor except 1.', concept: 'Simplest form' },
+    { id: 'equivalent-fractions-flash-7', front: 'Is 4/8 = 1/2?', back: 'Yes. 4/8 = 1/2.', concept: 'Quick check' },
+    { id: 'equivalent-fractions-flash-8', front: 'What is 5/10 in simplest form?', back: '5/10 = 1/2.', concept: 'Practice' },
+  ],
+
+  // Grade 4 Unit 8: Adding fractions (first lesson)
+  'adding-fractions': [
+    { id: 'adding-fractions-flash-1', front: 'How do you add fractions with the same denominator?', back: 'Add the numerators and keep the denominator. 2/5 + 1/5 = 3/5.', concept: 'Same denominator' },
+    { id: 'adding-fractions-flash-2', front: 'What is 1/4 + 2/4?', back: '1/4 + 2/4 = 3/4.', concept: 'Example' },
+    { id: 'adding-fractions-flash-3', front: 'Can you add 1/3 + 1/2 directly?', back: 'No. First find a common denominator (e.g. 6): 2/6 + 3/6 = 5/6.', concept: 'Different denominators' },
+    { id: 'adding-fractions-flash-4', front: 'What is a common denominator?', back: 'A common denominator is a number that both denominators divide into. For 2 and 3, 6 is common.', concept: 'Common denominator' },
+    { id: 'adding-fractions-flash-5', front: 'What is 2/7 + 3/7?', back: '2/7 + 3/7 = 5/7.', concept: 'Practice' },
+    { id: 'adding-fractions-flash-6', front: 'What is 1/5 + 2/5?', back: '1/5 + 2/5 = 3/5.', concept: 'Practice' },
+    { id: 'adding-fractions-flash-7', front: 'How do you subtract fractions with the same denominator?', back: 'Subtract the numerators and keep the denominator. 5/6 − 2/6 = 3/6 = 1/2.', concept: 'Subtract fractions' },
+    { id: 'adding-fractions-flash-8', front: 'What is 4/9 − 1/9?', back: '4/9 − 1/9 = 3/9 = 1/3.', concept: 'Subtract example' },
+  ],
+
   // Grade 8 - First Lesson: Irrational Numbers
   'irrational-numbers': [
     {
@@ -389,8 +461,28 @@ export const premadeFlashcards: Record<string, Flashcard[]> = {
   ],
 }
 
-// Get premade flashcards for a lesson, or return empty array if none exists
+// Grade 4: first lesson of each unit uses premade flashcards. Map first-lesson IDs to premade keys (same as quizzes).
+const GRADE4_FIRST_LESSON_FLASHCARD_ALIASES: Record<string, string> = {
+  'place-value-intro': 'place-value-intro',
+  'add-subtract-review': 'add-subtract-3',
+  'multiply-review': 'multiply-intro',
+  'multiply-2-digit-intro': 'multi-digit-multiply',
+  'division-review': 'division-intro',
+  'factors-intro': 'factors-multiples',
+  'equivalent-fractions-intro': 'equivalent-fractions',
+  'add-fractions-like': 'adding-fractions',
+}
+
+// Get premade flashcards for a lesson, or return empty array if none exists.
+// For Grade 4 first-lesson IDs, aliases to the premade set and rewrites card IDs to match lessonId.
 export function getPremadeFlashcards(lessonId: string): Flashcard[] {
-  return premadeFlashcards[lessonId] || []
+  const key = GRADE4_FIRST_LESSON_FLASHCARD_ALIASES[lessonId] ?? lessonId
+  const cards = premadeFlashcards[key]
+  if (!cards || cards.length === 0) return []
+  const baseId = lessonId
+  return cards.map((card, i) => ({
+    ...card,
+    id: `${baseId}-flash-${i + 1}`,
+  }))
 }
 

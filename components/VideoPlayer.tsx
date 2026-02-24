@@ -382,13 +382,14 @@ export default function VideoPlayer({
             />
           )}
           
-          {/* Click-anywhere overlay: play when paused, pause when playing. Leave bottom strip for native controls. */}
+          {/* Click-anywhere overlay: only when paused. When playing, use pointer-events-none so overlay never blocks video or native controls. */}
           <div
-            className={`absolute inset-x-0 top-0 bottom-12 flex items-center justify-center cursor-pointer z-50 transition-colors ${
-              isPaused ? 'bg-black/30 backdrop-blur-sm' : 'bg-transparent'
-            } ${!isPaused && !showPauseHint ? 'opacity-0 hover:opacity-80' : ''}`}
+            className={`absolute inset-x-0 top-0 bottom-14 flex items-center justify-center z-50 transition-colors ${
+              isPaused ? 'bg-black/30 backdrop-blur-sm cursor-pointer' : 'bg-transparent pointer-events-none'
+            } ${!isPaused && !showPauseHint ? 'opacity-0' : ''}`}
+            style={isPaused ? undefined : { pointerEvents: 'none' }}
             onClick={togglePlayPause}
-            onMouseDown={(e) => e.stopPropagation()}
+            onMouseDown={(e) => isPaused && e.stopPropagation()}
             role="button"
             aria-label={isPaused ? 'Play video' : 'Pause video'}
           >
@@ -418,9 +419,9 @@ export default function VideoPlayer({
             )}
           </div>
           
-          {/* Video Info Overlay - Duolingo Style - Hidden when playing */}
+          {/* Video Info Overlay - only when paused; kept above native controls (bottom-16 ≈ 64px) */}
           {isPaused && (
-            <div className="absolute bottom-4 left-4 right-4 bg-gradient-to-r from-green-500/90 to-emerald-500/90 backdrop-blur-md rounded-xl p-4 text-white shadow-2xl border-2 border-white/20 z-40">
+            <div className="absolute bottom-16 left-4 right-4 bg-gradient-to-r from-green-500/90 to-emerald-500/90 backdrop-blur-md rounded-xl p-4 text-white shadow-2xl border-2 border-white/20 z-40 pointer-events-none">
               <div className="flex items-center gap-3">
                 {topic && (
                   <div className="text-4xl drop-shadow-lg">{topic.icon}</div>

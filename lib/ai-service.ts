@@ -23,7 +23,8 @@ export class AIService {
     grade: string,
     language: string,
     lessonTitle?: string,
-    failedConcepts?: string[]
+    failedConcepts?: string[],
+    lessonDescription?: string
   ): Promise<QuizQuestion[]> {
     try {
       const response = await fetch('/api/quiz', {
@@ -36,6 +37,7 @@ export class AIService {
           grade,
           language,
           lessonTitle,
+          lessonDescription,
           ...(failedConcepts?.length ? { failedConcepts } : {}),
         }),
       })
@@ -57,7 +59,8 @@ export class AIService {
     lessonId: string,
     grade: string,
     language: string,
-    lessonTitle?: string
+    lessonTitle?: string,
+    lessonDescription?: string
   ): Promise<Flashcard[]> {
     try {
       const response = await fetch('/api/flashcards', {
@@ -70,6 +73,7 @@ export class AIService {
           grade,
           language,
           lessonTitle,
+          lessonDescription,
         }),
       })
 
